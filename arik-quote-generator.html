@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>אריק שיפוצים - הצעת מחיר</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root {
+    --primary: #1a1a2e;
+    --accent: #e8b84b;
+    --accent2: #c97b2e;
+    --surface: #ffffff;
+    --surface2: #f7f5f0;
+    --border: #e0d9cc;
+    --text: #1a1a2e;
+    --text-muted: #7a7060;
+    --danger: #c0392b;
+    --success: #27ae60;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Heebo', sans-serif;
+    background: var(--surface2);
+    color: var(--text);
+    min-height: 100vh;
+    direction: rtl;
+  }
+
+  .app-header {
+    background: var(--primary);
+    color: white;
+    padding: 20px 20px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+
+  .app-header h1 {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .app-header h1 span {
+    color: var(--accent);
+  }
+
+  .app-header p {
+    font-size: 12px;
+    opacity: 0.6;
+    margin-top: 2px;
+    font-weight: 300;
+  }
+
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+  }
+
+  .card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent2);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .form-group {
+    margin-bottom: 14px;
+  }
+
+  .form-group:last-child { margin-bottom: 0; }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  input, textarea, select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: 'Heebo', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    background: var(--surface2);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+    direction: rtl;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(232,184,75,0.15);
+    background: white;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+    line-height: 1.5;
+  }
+
+  .row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  /* Items table */
+  .items-list { margin-bottom: 12px; }
+
+  .item-row {
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+    position: relative;
+  }
+
+  .item-row .item-desc {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    padding-left: 28px;
+  }
+
+  .item-row .item-meta {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .item-row .item-total {
+    font-weight: 700;
+    color: var(--accent2);
+    font-size: 14px;
+    margin-right: auto;
+  }
+
+  .btn-remove {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: none;
+    border: none;
+    color: #ccc;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 6px;
+    transition: all 0.2s;
+    line-height: 1;
+  }
+
+  .btn-remove:hover { color: var(--danger); background: #fef0ee; }
+
+  .add-item-form {
+    background: #fffbf0;
+    border: 1.5px dashed var(--accent);
+    border-radius: 12px;
+    padding: 14px;
+  }
+
+  .add-item-form .form-group { margin-bottom: 10px; }
+
+  .btn-add-item {
+    width: 100%;
+    padding: 11px;
+    background: var(--accent);
+    color: var(--primary);
+    border: none;
+    border-radius: 10px;
+    font-family: 'Heebo', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 4px;
+  }
+
+  .btn-add-item:hover { background: var(--accent2); color: white; }
+
+  /* Totals */
+  .totals-box {
+    background: var(--primary);
+    border-radius: 12px;
+    padding: 16px;
+    color: white;
+  }
+
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    font-size: 14px;
+    opacity: 0.75;
+  }
+
+  .total-row.grand {
+    border-top: 1px solid rgba(255,255,255,0.2);
+    margin-top: 8px;
+    padding-top: 12px;
+    font-size: 18px;
+    font-weight: 800;
+    opacity: 1;
+    color: var(--accent);
+  }
+
+  /* Notes */
+  .notes-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .preset-btn {
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-family: 'Heebo', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.2s;
+  }
+
+  .preset-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent2);
+    background: #fffbf0;
+  }
+
+  /* Generate Button */
+  .btn-generate {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+    color: var(--primary);
+    border: none;
+    border-radius: 14px;
+    font-family: 'Heebo', sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 4px 20px rgba(232,184,75,0.4);
+    letter-spacing: 0.3px;
+  }
+
+  .btn-generate:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgba(232,184,75,0.5);
+  }
+
+  .btn-generate:active { transform: translateY(0); }
+
+  .btn-generate:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* Empty state */
+  .empty-items {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 16px;
+    opacity: 0.6;
+  }
+
+  /* Quote number badge */
+  .quote-num {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fffbf0;
+    border: 1px solid var(--accent);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent2);
+    margin-bottom: 14px;
+  }
+
+  .success-toast {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--success);
+    color: white;
+    padding: 14px 24px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 14px;
+    z-index: 999;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    white-space: nowrap;
+  }
+
+  .hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  @media (max-width: 400px) {
+    .row-2 { grid-template-columns: 1fr; }
+    .app-header h1 { font-size: 19px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <h1>אריק שיפוצים <span>בע"מ</span></h1>
+  <p>מחולל הצעות מחיר מקצועי</p>
+</div>
+
+<div class="container">
+
+  <!-- Quote Number -->
+  <div class="quote-num">
+    📋 הצעת מחיר מס׳ <span id="quoteNumDisplay">001</span>
+  </div>
+
+  <!-- Client Details -->
+  <div class="card">
+    <div class="card-title">👤 פרטי לקוח</div>
+    <div class="form-group">
+      <label>שם הלקוח / שם החברה</label>
+      <input type="text" id="clientName" placeholder="לדוגמה: משפחת כהן" autocomplete="off">
+    </div>
+    <div class="row-2">
+      <div class="form-group">
+        <label>טלפון</label>
+        <input type="tel" id="clientPhone" placeholder="050-0000000">
+      </div>
+      <div class="form-group">
+        <label>תאריך</label>
+        <input type="date" id="quoteDate">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>כתובת הנכס / תיאור הפרויקט</label>
+      <input type="text" id="projectAddress" placeholder="לדוגמה: רחוב הרצל 5, תל אביב">
+    </div>
+  </div>
+
+  <!-- Items -->
+  <div class="card">
+    <div class="card-title">🔧 פריטי העבודה</div>
+
+    <div class="items-list" id="itemsList">
+      <div class="empty-items" id="emptyState">עדיין לא נוספו פריטים — הוסף למטה</div>
+    </div>
+
+    <div class="add-item-form">
+      <div class="form-group">
+        <label>תיאור העבודה</label>
+        <input type="text" id="newDesc" placeholder="לדוגמה: ריצוף סלון — 40 מ״ר" autocomplete="off">
+      </div>
+      <div class="row-2">
+        <div class="form-group">
+          <label>כמות</label>
+          <input type="number" id="newQty" placeholder="1" min="0.1" step="0.1" value="1">
+        </div>
+        <div class="form-group">
+          <label>מחיר ליחידה (₪)</label>
+          <input type="number" id="newPrice" placeholder="0" min="0" step="10">
+        </div>
+      </div>
+      <button class="btn-add-item" onclick="addItem()">+ הוסף פריט</button>
+    </div>
+  </div>
+
+  <!-- Totals -->
+  <div class="card">
+    <div class="card-title">💰 סיכום כספי</div>
+    <div class="totals-box">
+      <div class="total-row">
+        <span>סכום לפני מע"מ</span>
+        <span id="subtotal">₪0</span>
+      </div>
+      <div class="total-row">
+        <span>מע"מ 18%</span>
+        <span id="vatAmount">₪0</span>
+      </div>
+      <div class="total-row grand">
+        <span>סה"כ לתשלום</span>
+        <span id="grandTotal">₪0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notes -->
+  <div class="card">
+    <div class="card-title">📝 הערות</div>
+    <div class="notes-presets">
+      <button class="preset-btn" onclick="addPreset('תוקף ההצעה 30 יום מתאריך הנפקתה')">תוקף 30 יום</button>
+      <button class="preset-btn" onclick="addPreset('תשלום: 30% מקדמה, 70% עם סיום העבודה')">תנאי תשלום</button>
+      <button class="preset-btn" onclick="addPreset('העבודה כוללת פינוי פסולת מהאתר')">פינוי פסולת</button>
+      <button class="preset-btn" onclick="addPreset('אחריות על העבודה: שנה אחת')">אחריות שנה</button>
+    </div>
+    <textarea id="notes" placeholder="הוסף הערות, תנאי תשלום, אחריות..."></textarea>
+  </div>
+
+  <!-- Generate -->
+  <button class="btn-generate" id="generateBtn" onclick="generatePDF()">
+    📄 צור PDF ושמור לטלפון
+  </button>
+
+</div>
+
+<div class="success-toast" id="toast">✅ ה-PDF נשמר! פתח מהורדות ושלח ב-WhatsApp</div>
+
+<script>
+  let items = [];
+  let quoteCounter = parseInt(localStorage.getItem('quoteCounter') || '1');
+
+  // Set today's date
+  document.getElementById('quoteDate').valueAsDate = new Date();
+  document.getElementById('quoteNumDisplay').textContent = String(quoteCounter).padStart(3, '0');
+
+  function formatMoney(n) {
+    return '₪' + Math.round(n).toLocaleString('he-IL');
+  }
+
+  function addItem() {
+    const desc = document.getElementById('newDesc').value.trim();
+    const qty = parseFloat(document.getElementById('newQty').value) || 1;
+    const price = parseFloat(document.getElementById('newPrice').value) || 0;
+
+    if (!desc) { document.getElementById('newDesc').focus(); return; }
+    if (!price) { document.getElementById('newPrice').focus(); return; }
+
+    items.push({ desc, qty, price, total: qty * price });
+    renderItems();
+
+    document.getElementById('newDesc').value = '';
+    document.getElementById('newPrice').value = '';
+    document.getElementById('newQty').value = '1';
+    document.getElementById('newDesc').focus();
+  }
+
+  // Allow Enter key to add item
+  document.getElementById('newPrice').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addItem();
+  });
+
+  function removeItem(index) {
+    items.splice(index, 1);
+    renderItems();
+  }
+
+  function renderItems() {
+    const list = document.getElementById('itemsList');
+    const empty = document.getElementById('emptyState');
+
+    if (items.length === 0) {
+      list.innerHTML = '';
+      list.appendChild(empty);
+      updateTotals(0);
+      return;
+    }
+
+    list.innerHTML = items.map((item, i) => `
+      <div class="item-row">
+        <button class="btn-remove" onclick="removeItem(${i})">×</button>
+        <div class="item-desc">${item.desc}</div>
+        <div class="item-meta">
+          <span>${item.qty} יח׳</span>
+          <span>×</span>
+          <span>${formatMoney(item.price)}</span>
+          <span class="item-total">${formatMoney(item.total)}</span>
+        </div>
+      </div>
+    `).join('');
+
+    const subtotal = items.reduce((s, i) => s + i.total, 0);
+    updateTotals(subtotal);
+  }
+
+  function updateTotals(subtotal) {
+    const vat = subtotal * 0.18;
+    const grand = subtotal + vat;
+    document.getElementById('subtotal').textContent = formatMoney(subtotal);
+    document.getElementById('vatAmount').textContent = formatMoney(vat);
+    document.getElementById('grandTotal').textContent = formatMoney(grand);
+  }
+
+  function addPreset(text) {
+    const el = document.getElementById('notes');
+    el.value = el.value ? el.value + '\n' + text : text;
+  }
+
+  async function generatePDF() {
+    const clientName = document.getElementById('clientName').value.trim();
+    if (!clientName) { document.getElementById('clientName').focus(); alert('נא להזין שם לקוח'); return; }
+    if (items.length === 0) { alert('נא להוסיף לפחות פריט אחד'); return; }
+
+    const btn = document.getElementById('generateBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ יוצר PDF...';
+
+    const { jsPDF } = window.jspdf;
+
+    // Create PDF in A4
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+    const W = 210;
+    const pageH = 297;
+    let y = 0;
+
+    // ─── HEADER BACKGROUND ───
+    doc.setFillColor(26, 26, 46); // primary dark blue
+    doc.rect(0, 0, W, 45, 'F');
+
+    // Gold accent bar
+    doc.setFillColor(232, 184, 75);
+    doc.rect(0, 45, W, 3, 'F');
+
+    // Company Name (Hebrew — use built-in font, simulate RTL by reversing)
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(26);
+    const companyHe = reverseHebrew('אריק שיפוצים בע"מ');
+    doc.text(companyHe, W / 2, 22, { align: 'center' });
+
+    doc.setFontSize(11);
+    doc.setTextColor(232, 184, 75);
+    const subtitle = reverseHebrew('הצעת מחיר מקצועית');
+    doc.text(subtitle, W / 2, 32, { align: 'center' });
+
+    doc.setFontSize(10);
+    doc.setTextColor(180, 170, 150);
+    const quoteNum = reverseHebrew(`מס׳ ${String(quoteCounter).padStart(3, '0')}`);
+    doc.text(quoteNum, W / 2, 41, { align: 'center' });
+
+    y = 56;
+
+    // ─── META INFO BOX ───
+    doc.setFillColor(247, 245, 240);
+    doc.roundedRect(12, y, W - 24, 34, 3, 3, 'F');
+    doc.setDrawColor(224, 217, 204);
+    doc.roundedRect(12, y, W - 24, 34, 3, 3, 'S');
+
+    doc.setFontSize(10);
+    doc.setTextColor(122, 112, 96);
+    doc.setFont('helvetica', 'normal');
+
+    const dateVal = document.getElementById('quoteDate').value;
+    const dateFormatted = dateVal ? new Date(dateVal).toLocaleDateString('he-IL') : new Date().toLocaleDateString('he-IL');
+    const phone = document.getElementById('clientPhone').value;
+    const address = document.getElementById('projectAddress').value;
+
+    // Right column
+    const rx = W - 20;
+    doc.text(reverseHebrew('לקוח:'), rx, y + 10, { align: 'right' });
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(26, 26, 46);
+    doc.text(reverseHebrew(clientName), rx, y + 17, { align: 'right' });
+
+    if (phone) {
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(122, 112, 96);
+      doc.text(reverseHebrew('טלפון: ' + phone), rx, y + 24, { align: 'right' });
+    }
+
+    if (address) {
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(122, 112, 96);
+      const shortAddr = address.length > 35 ? address.substring(0, 32) + '...' : address;
+      doc.text(reverseHebrew('כתובת: ' + shortAddr), rx, y + 31, { align: 'right' });
+    }
+
+    // Left column
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(122, 112, 96);
+    doc.text(reverseHebrew('תאריך:'), 20, y + 10);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(26, 26, 46);
+    doc.text(dateFormatted, 20, y + 17);
+
+    y += 42;
+
+    // ─── ITEMS TABLE ───
+    // Table header
+    doc.setFillColor(26, 26, 46);
+    doc.rect(12, y, W - 24, 9, 'F');
+    doc.setTextColor(232, 184, 75);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+
+    doc.text(reverseHebrew('סה"כ'), 38, y + 6, { align: 'center' });
+    doc.text(reverseHebrew('מחיר יח׳'), 72, y + 6, { align: 'center' });
+    doc.text(reverseHebrew('כמות'), 103, y + 6, { align: 'center' });
+    doc.text(reverseHebrew('תיאור'), W - 18, y + 6, { align: 'right' });
+
+    y += 9;
+
+    // Rows
+    doc.setFontSize(9.5);
+    items.forEach((item, idx) => {
+      const rowH = 9;
+      if (idx % 2 === 0) {
+        doc.setFillColor(255, 255, 255);
+      } else {
+        doc.setFillColor(247, 245, 240);
+      }
+      doc.rect(12, y, W - 24, rowH, 'F');
+
+      // Border
+      doc.setDrawColor(224, 217, 204);
+      doc.line(12, y + rowH, W - 12, y + rowH);
+
+      doc.setTextColor(201, 123, 46);
+      doc.setFont('helvetica', 'bold');
+      doc.text('₪' + Math.round(item.total).toLocaleString(), 38, y + 6.2, { align: 'center' });
+
+      doc.setTextColor(100, 90, 80);
+      doc.setFont('helvetica', 'normal');
+      doc.text('₪' + Math.round(item.price).toLocaleString(), 72, y + 6.2, { align: 'center' });
+      doc.text(String(item.qty), 103, y + 6.2, { align: 'center' });
+
+      doc.setTextColor(26, 26, 46);
+      const descText = item.desc.length > 38 ? item.desc.substring(0, 35) + '...' : item.desc;
+      doc.text(reverseHebrew(descText), W - 18, y + 6.2, { align: 'right' });
+
+      y += rowH;
+    });
+
+    y += 4;
+
+    // ─── TOTALS ───
+    const subtotal = items.reduce((s, i) => s + i.total, 0);
+    const vat = subtotal * 0.18;
+    const grand = subtotal + vat;
+
+    const totalsX = W - 12;
+    const labelX = totalsX - 52;
+
+    doc.setFontSize(10);
+    doc.setTextColor(100, 90, 80);
+    doc.setFont('helvetica', 'normal');
+    doc.text(reverseHebrew('סכום לפני מע"מ:'), labelX, y + 7, { align: 'right' });
+    doc.text('₪' + Math.round(subtotal).toLocaleString(), totalsX, y + 7, { align: 'right' });
+
+    y += 8;
+    doc.text(reverseHebrew('מע"מ 18%:'), labelX, y + 7, { align: 'right' });
+    doc.text('₪' + Math.round(vat).toLocaleString(), totalsX, y + 7, { align: 'right' });
+
+    y += 6;
+    // Grand total box
+    doc.setFillColor(26, 26, 46);
+    doc.roundedRect(W - 80, y, 68, 13, 2, 2, 'F');
+    doc.setTextColor(232, 184, 75);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.text(reverseHebrew('סה"כ לתשלום:'), W - 78, y + 8.5, { align: 'left' });
+    doc.text('₪' + Math.round(grand).toLocaleString(), totalsX, y + 8.5, { align: 'right' });
+
+    y += 20;
+
+    // ─── NOTES ───
+    const notes = document.getElementById('notes').value.trim();
+    if (notes) {
+      doc.setFillColor(255, 251, 240);
+      doc.setDrawColor(232, 184, 75);
+      doc.roundedRect(12, y, W - 24, 6 + (notes.split('\n').length * 6) + 4, 3, 3, 'FD');
+      doc.setTextColor(26, 26, 46);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9.5);
+      doc.text(reverseHebrew('הערות:'), W - 18, y + 7, { align: 'right' });
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(80, 70, 60);
+      doc.setFontSize(9);
+      notes.split('\n').forEach((line, li) => {
+        doc.text(reverseHebrew(line), W - 18, y + 13 + (li * 6), { align: 'right' });
+      });
+      y += 10 + (notes.split('\n').length * 6) + 10;
+    }
+
+    // ─── FOOTER ───
+    const footerY = pageH - 16;
+    doc.setFillColor(26, 26, 46);
+    doc.rect(0, footerY - 2, W, 20, 'F');
+    doc.setFillColor(232, 184, 75);
+    doc.rect(0, footerY - 2, W, 1.5, 'F');
+
+    doc.setTextColor(160, 150, 130);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.text(reverseHebrew('תודה על הפנייה! נשמח לשרת אותך.'), W / 2, footerY + 5, { align: 'center' });
+    doc.setTextColor(232, 184, 75);
+    doc.setFontSize(7.5);
+    doc.text(reverseHebrew('אריק שיפוצים בע"מ'), W / 2, footerY + 11, { align: 'center' });
+
+    // ─── SAVE ───
+    const filename = `הצעת-מחיר-${clientName.replace(/\s+/g, '-')}-${String(quoteCounter).padStart(3,'0')}.pdf`;
+    doc.save(filename);
+
+    // Increment counter
+    quoteCounter++;
+    localStorage.setItem('quoteCounter', quoteCounter);
+    document.getElementById('quoteNumDisplay').textContent = String(quoteCounter).padStart(3, '0');
+
+    // Show toast
+    const toast = document.getElementById('toast');
+    toast.style.display = 'block';
+    setTimeout(() => { toast.style.display = 'none'; }, 4000);
+
+    btn.disabled = false;
+    btn.textContent = '📄 צור PDF ושמור לטלפון';
+  }
+
+  function reverseHebrew(str) {
+    // Reverse Hebrew text for jsPDF rendering (which doesn't natively support RTL)
+    return str.split('').reverse().join('');
+  }
+</script>
+</body>
+</html>
