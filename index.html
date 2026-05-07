@@ -9,279 +9,109 @@
 <meta name="theme-color" content="#1a1a2e">
 <title>אריק שיפוצים - הצעת מחיר</title>
 <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjQwIiBmaWxsPSIjMWExYTJlIi8+PHRleHQgeD0iOTAiIHk9IjExNSIgZm9udC1zaXplPSI4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+8J+SoTwvdGV4dD48L3N2Zz4=">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   :root {
-    --primary: #1a1a2e;
-    --accent: #e8b84b;
-    --accent2: #c97b2e;
-    --surface: #ffffff;
-    --surface2: #f7f5f0;
-    --border: #e0d9cc;
-    --text: #1a1a2e;
-    --text-muted: #7a7060;
-    --danger: #c0392b;
-    --success: #27ae60;
+    --primary:#1a1a2e; --accent:#e8b84b; --accent2:#c97b2e;
+    --surface2:#f7f5f0; --border:#e0d9cc; --text:#1a1a2e;
+    --text-muted:#7a7060; --danger:#c0392b; --success:#27ae60;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body {
-    font-family: -apple-system, 'Heebo', sans-serif;
-    background: var(--surface2);
-    color: var(--text);
-    min-height: 100vh;
-    direction: rtl;
-    -webkit-font-smoothing: antialiased;
-  }
-  .app-header {
-    background: var(--primary);
-    color: white;
-    padding: 16px 20px 14px;
-    padding-top: max(16px, env(safe-area-inset-top));
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 20px rgba(0,0,0,0.3);
-  }
-  .app-header h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
-  .app-header h1 span { color: var(--accent); }
-  .app-header p { font-size: 11px; opacity: 0.55; margin-top: 2px; font-weight: 300; }
+  * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+  body { font-family:'Heebo',sans-serif; background:var(--surface2); color:var(--text); min-height:100vh; direction:rtl; -webkit-font-smoothing:antialiased; }
 
-  /* Install banner */
-  .install-banner {
-    background: linear-gradient(135deg, #0f3460, #1a1a2e);
-    color: white;
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 13px;
-    border-bottom: 2px solid var(--accent);
-  }
-  .install-banner span { flex: 1; line-height: 1.4; }
-  .install-banner strong { color: var(--accent); display: block; font-size: 12px; }
-  .install-banner button {
-    background: var(--accent);
-    color: var(--primary);
-    border: none;
-    border-radius: 8px;
-    padding: 7px 12px;
-    font-weight: 800;
-    font-size: 12px;
-    cursor: pointer;
-    white-space: nowrap;
-    font-family: inherit;
-  }
-  .install-banner .close-btn {
-    background: none;
-    color: rgba(255,255,255,0.5);
-    padding: 4px 6px;
-    font-size: 18px;
-    line-height: 1;
-    min-width: unset;
-  }
+  .app-header { background:var(--primary); color:white; padding:16px 20px 14px; padding-top:max(16px,env(safe-area-inset-top)); position:sticky; top:0; z-index:100; box-shadow:0 2px 20px rgba(0,0,0,0.3); }
+  .app-header h1 { font-size:20px; font-weight:800; }
+  .app-header h1 span { color:var(--accent); }
+  .app-header p { font-size:11px; opacity:0.55; margin-top:2px; }
 
-  .container { max-width: 600px; margin: 0 auto; padding: 16px 14px 60px; }
+  .install-banner { background:linear-gradient(135deg,#0f3460,#1a1a2e); color:white; padding:12px 16px; display:flex; align-items:center; gap:10px; font-size:13px; border-bottom:2px solid var(--accent); }
+  .install-banner span { flex:1; line-height:1.4; }
+  .install-banner strong { color:var(--accent); display:block; font-size:12px; }
+  .install-banner .ibtn { background:var(--accent); color:var(--primary); border:none; border-radius:8px; padding:7px 12px; font-weight:800; font-size:12px; cursor:pointer; font-family:inherit; }
+  .install-banner .xbtn { background:none; color:rgba(255,255,255,0.5); border:none; padding:4px 8px; font-size:20px; cursor:pointer; }
 
-  .card {
-    background: white;
-    border-radius: 16px;
-    padding: 18px;
-    margin-bottom: 14px;
-    box-shadow: 0 1px 8px rgba(0,0,0,0.06);
-    border: 1px solid var(--border);
-  }
-  .card-title {
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--accent2);
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .card-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .container { max-width:600px; margin:0 auto; padding:16px 14px 60px; }
+  .card { background:white; border-radius:16px; padding:18px; margin-bottom:14px; box-shadow:0 1px 8px rgba(0,0,0,0.06); border:1px solid var(--border); }
+  .card-title { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--accent2); margin-bottom:14px; display:flex; align-items:center; gap:6px; }
+  .card-title::after { content:''; flex:1; height:1px; background:var(--border); }
 
-  .form-group { margin-bottom: 12px; }
-  .form-group:last-child { margin-bottom: 0; }
-  label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; }
+  .form-group { margin-bottom:12px; }
+  .form-group:last-child { margin-bottom:0; }
+  label { display:block; font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:5px; }
+  input,textarea { width:100%; padding:12px 14px; border:1.5px solid var(--border); border-radius:10px; font-family:'Heebo',sans-serif; font-size:16px; color:var(--text); background:var(--surface2); -webkit-appearance:none; direction:rtl; }
+  input:focus,textarea:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(232,184,75,0.15); background:white; }
+  textarea { resize:vertical; min-height:80px; line-height:1.5; }
+  .row-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 
-  input, textarea, select {
-    width: 100%;
-    padding: 12px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    font-family: inherit;
-    font-size: 16px; /* 16px prevents iOS zoom */
-    color: var(--text);
-    background: var(--surface2);
-    transition: border-color 0.2s, box-shadow 0.2s;
-    -webkit-appearance: none;
-    direction: rtl;
-  }
-  input:focus, textarea:focus, select:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(232,184,75,0.15);
-    background: white;
-  }
-  textarea { resize: vertical; min-height: 80px; line-height: 1.5; font-size: 15px; }
+  .items-list { margin-bottom:12px; }
+  .item-row { background:var(--surface2); border-radius:10px; padding:11px 12px; margin-bottom:8px; border:1px solid var(--border); position:relative; }
+  .item-desc { font-size:14px; font-weight:600; margin-bottom:5px; padding-left:28px; }
+  .item-meta { display:flex; gap:8px; align-items:center; font-size:13px; color:var(--text-muted); }
+  .item-total { font-weight:700; color:var(--accent2); font-size:14px; margin-right:auto; }
+  .btn-remove { position:absolute; top:8px; left:8px; background:none; border:none; color:#ccc; font-size:20px; cursor:pointer; padding:2px 6px; line-height:1; }
 
-  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .add-item-form { background:#fffbf0; border:1.5px dashed var(--accent); border-radius:12px; padding:14px; }
+  .add-item-form .form-group { margin-bottom:10px; }
+  .btn-add { width:100%; padding:13px; background:var(--accent); color:var(--primary); border:none; border-radius:10px; font-family:'Heebo',sans-serif; font-size:15px; font-weight:800; cursor:pointer; -webkit-appearance:none; }
+  .btn-add:active { background:var(--accent2); color:white; }
 
-  /* Items */
-  .items-list { margin-bottom: 12px; }
-  .item-row {
-    background: var(--surface2);
-    border-radius: 10px;
-    padding: 11px 12px;
-    margin-bottom: 8px;
-    border: 1px solid var(--border);
-    position: relative;
-  }
-  .item-row .item-desc { font-size: 14px; font-weight: 600; margin-bottom: 5px; padding-left: 28px; }
-  .item-row .item-meta {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    font-size: 13px;
-    color: var(--text-muted);
-  }
-  .item-row .item-total { font-weight: 700; color: var(--accent2); font-size: 14px; margin-right: auto; }
-  .btn-remove {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    background: none;
-    border: none;
-    color: #ccc;
-    font-size: 20px;
-    cursor: pointer;
-    padding: 2px 6px;
-    border-radius: 6px;
-    line-height: 1;
-    transition: all 0.2s;
-  }
-  .btn-remove:active { color: var(--danger); background: #fef0ee; }
+  .totals-box { background:var(--primary); border-radius:12px; padding:16px; color:white; }
+  .total-row { display:flex; justify-content:space-between; padding:5px 0; font-size:14px; opacity:0.75; }
+  .total-row.grand { border-top:1px solid rgba(255,255,255,0.2); margin-top:8px; padding-top:12px; font-size:19px; font-weight:800; opacity:1; color:var(--accent); }
 
-  .add-item-form {
-    background: #fffbf0;
-    border: 1.5px dashed var(--accent);
-    border-radius: 12px;
-    padding: 14px;
-  }
-  .add-item-form .form-group { margin-bottom: 10px; }
+  .notes-presets { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
+  .preset-btn { background:var(--surface2); border:1.5px solid var(--border); border-radius:20px; padding:5px 12px; font-family:'Heebo',sans-serif; font-size:12px; font-weight:600; cursor:pointer; color:var(--text-muted); -webkit-appearance:none; }
 
-  .btn-add-item {
-    width: 100%;
-    padding: 13px;
-    background: var(--accent);
-    color: var(--primary);
-    border: none;
-    border-radius: 10px;
-    font-family: inherit;
-    font-size: 15px;
-    font-weight: 800;
-    cursor: pointer;
-    transition: all 0.15s;
-    margin-top: 2px;
-    -webkit-appearance: none;
-  }
-  .btn-add-item:active { background: var(--accent2); color: white; transform: scale(0.98); }
+  .btn-generate { width:100%; padding:18px; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:var(--primary); border:none; border-radius:14px; font-family:'Heebo',sans-serif; font-size:17px; font-weight:800; cursor:pointer; box-shadow:0 4px 20px rgba(232,184,75,0.4); -webkit-appearance:none; }
+  .btn-generate:disabled { opacity:0.5; }
 
-  /* Totals */
-  .totals-box { background: var(--primary); border-radius: 12px; padding: 16px; color: white; }
-  .total-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: 14px; opacity: 0.75; }
-  .total-row.grand {
-    border-top: 1px solid rgba(255,255,255,0.2);
-    margin-top: 8px;
-    padding-top: 12px;
-    font-size: 19px;
-    font-weight: 800;
-    opacity: 1;
-    color: var(--accent);
-  }
+  .quote-num { display:inline-flex; align-items:center; gap:6px; background:#fffbf0; border:1px solid var(--accent); border-radius:20px; padding:4px 12px; font-size:12px; font-weight:700; color:var(--accent2); margin-bottom:14px; }
+  .empty-items { text-align:center; color:var(--text-muted); font-size:13px; padding:16px; opacity:0.6; }
 
-  /* Notes presets */
-  .notes-presets { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-  .preset-btn {
-    background: var(--surface2);
-    border: 1.5px solid var(--border);
-    border-radius: 20px;
-    padding: 5px 12px;
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    color: var(--text-muted);
-    transition: all 0.15s;
-    -webkit-appearance: none;
-  }
-  .preset-btn:active { border-color: var(--accent); color: var(--accent2); background: #fffbf0; }
+  .toast { display:none; position:fixed; bottom:max(30px,env(safe-area-inset-bottom,30px)); left:50%; transform:translateX(-50%); background:var(--success); color:white; padding:14px 24px; border-radius:50px; font-weight:700; font-size:14px; z-index:999; box-shadow:0 4px 20px rgba(0,0,0,0.2); max-width:90vw; white-space:normal; line-height:1.4; text-align:center; }
 
-  /* Generate button */
-  .btn-generate {
-    width: 100%;
-    padding: 18px;
-    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
-    color: var(--primary);
-    border: none;
-    border-radius: 14px;
-    font-family: inherit;
-    font-size: 17px;
-    font-weight: 800;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 4px 20px rgba(232,184,75,0.4);
-    -webkit-appearance: none;
+  /* ── PDF PREVIEW TEMPLATE (hidden, used only for rendering) ── */
+  #pdfTemplate {
+    position:fixed; left:-9999px; top:0;
+    width:794px; /* A4 at 96dpi */
+    background:white;
+    font-family:'Heebo',sans-serif;
+    direction:rtl;
+    color:#1a1a2e;
+    padding:0;
   }
-  .btn-generate:active { transform: scale(0.98); box-shadow: 0 2px 10px rgba(232,184,75,0.3); }
-  .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .pt-header { background:#1a1a2e; color:white; padding:28px 40px 24px; text-align:center; }
+  .pt-header h1 { font-size:28px; font-weight:800; margin-bottom:6px; }
+  .pt-header h1 span { color:#e8b84b; }
+  .pt-header .pt-sub { color:#e8b84b; font-size:13px; font-weight:400; }
+  .pt-header .pt-num { color:rgba(255,255,255,0.5); font-size:11px; margin-top:4px; }
+  .pt-gold-bar { height:4px; background:#e8b84b; }
+  .pt-body { padding:28px 40px; }
+  .pt-meta { display:flex; justify-content:space-between; background:#f7f5f0; border:1px solid #e0d9cc; border-radius:10px; padding:16px 20px; margin-bottom:24px; }
+  .pt-meta-group label { font-size:10px; color:#7a7060; font-weight:600; display:block; margin-bottom:3px; }
+  .pt-meta-group span { font-size:14px; font-weight:700; }
+  .pt-meta-group small { font-size:11px; color:#7a7060; display:block; margin-top:2px; }
+  .pt-table { width:100%; border-collapse:collapse; margin-bottom:20px; }
+  .pt-table thead tr { background:#1a1a2e; color:#e8b84b; }
+  .pt-table thead th { padding:9px 12px; font-size:11px; font-weight:700; }
+  .pt-table tbody tr:nth-child(even) { background:#f7f5f0; }
+  .pt-table tbody td { padding:9px 12px; font-size:12px; border-bottom:1px solid #e8e0d5; }
+  .pt-table .col-desc { text-align:right; font-weight:600; }
+  .pt-table .col-num { text-align:center; color:#7a7060; }
+  .pt-table .col-total { text-align:center; font-weight:700; color:#c97b2e; }
+  .pt-totals { display:flex; justify-content:flex-start; margin-bottom:20px; }
+  .pt-totals-box { background:#f7f5f0; border:1px solid #e0d9cc; border-radius:10px; padding:16px 24px; min-width:220px; }
+  .pt-totals-row { display:flex; justify-content:space-between; gap:32px; padding:4px 0; font-size:13px; color:#7a7060; }
+  .pt-totals-row.grand { border-top:2px solid #1a1a2e; margin-top:8px; padding-top:10px; font-size:16px; font-weight:800; color:#1a1a2e; }
+  .pt-notes { background:#fffbf0; border:1.5px solid #e8b84b; border-radius:10px; padding:14px 18px; margin-bottom:20px; }
+  .pt-notes h4 { font-size:11px; font-weight:700; color:#c97b2e; margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; }
+  .pt-notes p { font-size:12px; line-height:1.7; white-space:pre-line; }
+  .pt-footer { background:#1a1a2e; color:rgba(255,255,255,0.5); text-align:center; padding:16px; font-size:11px; }
+  .pt-footer span { color:#e8b84b; }
 
-  /* Quote number */
-  .quote-num {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: #fffbf0;
-    border: 1px solid var(--accent);
-    border-radius: 20px;
-    padding: 4px 12px;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--accent2);
-    margin-bottom: 14px;
-  }
-
-  /* Toast */
-  .success-toast {
-    display: none;
-    position: fixed;
-    bottom: max(30px, env(safe-area-inset-bottom, 30px));
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--success);
-    color: white;
-    padding: 14px 24px;
-    border-radius: 50px;
-    font-weight: 700;
-    font-size: 14px;
-    z-index: 999;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-    white-space: nowrap;
-    text-align: center;
-    max-width: 90vw;
-    white-space: normal;
-    line-height: 1.4;
-  }
-
-  .empty-items { text-align: center; color: var(--text-muted); font-size: 13px; padding: 16px; opacity: 0.6; }
-
-  @media (max-width: 400px) {
-    .row-2 { grid-template-columns: 1fr; }
-    .app-header h1 { font-size: 18px; }
-  }
+  @media (max-width:400px) { .row-2 { grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
@@ -291,89 +121,47 @@
   <p>מחולל הצעות מחיר מקצועי</p>
 </div>
 
-<!-- iOS install banner -->
 <div class="install-banner" id="installBanner" style="display:none">
-  <div style="font-size:26px">📲</div>
-  <span>
-    הוסף לסקרין הבית לגישה מהירה
-    <strong>לחץ ⎙ Share ← "Add to Home Screen"</strong>
-  </span>
-  <button class="close-btn" onclick="closeBanner()">×</button>
+  <div style="font-size:24px">📲</div>
+  <span>הוסף למסך הבית לגישה מהירה<strong>לחץ ⎙ Share ← "Add to Home Screen"</strong></span>
+  <button class="xbtn" onclick="closeBanner()">×</button>
 </div>
 
 <div class="container">
-  <div class="quote-num">
-    📋 הצעת מחיר מס׳ <span id="quoteNumDisplay">001</span>
-  </div>
+  <div class="quote-num">📋 הצעת מחיר מס׳ <span id="quoteNumDisplay">001</span></div>
 
-  <!-- Client Details -->
   <div class="card">
     <div class="card-title">👤 פרטי לקוח</div>
-    <div class="form-group">
-      <label>שם הלקוח / שם החברה</label>
-      <input type="text" id="clientName" placeholder="לדוגמה: משפחת כהן" autocomplete="off" autocorrect="off">
-    </div>
+    <div class="form-group"><label>שם הלקוח / שם החברה</label><input type="text" id="clientName" placeholder="לדוגמה: משפחת כהן" autocomplete="off" autocorrect="off"></div>
     <div class="row-2">
-      <div class="form-group">
-        <label>טלפון</label>
-        <input type="tel" id="clientPhone" placeholder="050-0000000">
-      </div>
-      <div class="form-group">
-        <label>תאריך</label>
-        <input type="date" id="quoteDate">
-      </div>
+      <div class="form-group"><label>טלפון</label><input type="tel" id="clientPhone" placeholder="050-0000000"></div>
+      <div class="form-group"><label>תאריך</label><input type="date" id="quoteDate"></div>
     </div>
-    <div class="form-group">
-      <label>כתובת הנכס / תיאור הפרויקט</label>
-      <input type="text" id="projectAddress" placeholder="לדוגמה: רחוב הרצל 5, תל אביב" autocorrect="off">
-    </div>
+    <div class="form-group"><label>כתובת הנכס</label><input type="text" id="projectAddress" placeholder="רחוב הרצל 5, תל אביב" autocorrect="off"></div>
   </div>
 
-  <!-- Items -->
   <div class="card">
     <div class="card-title">🔧 פריטי העבודה</div>
-    <div class="items-list" id="itemsList">
-      <div class="empty-items" id="emptyState">עדיין לא נוספו פריטים — הוסף למטה</div>
-    </div>
+    <div class="items-list" id="itemsList"><div class="empty-items">עדיין לא נוספו פריטים — הוסף למטה</div></div>
     <div class="add-item-form">
-      <div class="form-group">
-        <label>תיאור העבודה</label>
-        <input type="text" id="newDesc" placeholder="לדוגמה: ריצוף סלון 40 מ״ר" autocomplete="off" autocorrect="off">
-      </div>
+      <div class="form-group"><label>תיאור העבודה</label><input type="text" id="newDesc" placeholder="ריצוף סלון 40 מ״ר" autocomplete="off" autocorrect="off"></div>
       <div class="row-2">
-        <div class="form-group">
-          <label>כמות</label>
-          <input type="number" id="newQty" placeholder="1" min="0.1" step="0.1" value="1" inputmode="decimal">
-        </div>
-        <div class="form-group">
-          <label>מחיר ליחידה (₪)</label>
-          <input type="number" id="newPrice" placeholder="0" min="0" step="10" inputmode="decimal">
-        </div>
+        <div class="form-group"><label>כמות</label><input type="number" id="newQty" value="1" min="0.1" step="0.1" inputmode="decimal"></div>
+        <div class="form-group"><label>מחיר ליחידה (₪)</label><input type="number" id="newPrice" placeholder="0" min="0" step="10" inputmode="decimal"></div>
       </div>
-      <button class="btn-add-item" onclick="addItem()">＋ הוסף פריט</button>
+      <button class="btn-add" onclick="addItem()">＋ הוסף פריט</button>
     </div>
   </div>
 
-  <!-- Totals -->
   <div class="card">
     <div class="card-title">💰 סיכום כספי</div>
     <div class="totals-box">
-      <div class="total-row">
-        <span>סכום לפני מע"מ</span>
-        <span id="subtotal">₪0</span>
-      </div>
-      <div class="total-row">
-        <span>מע"מ 18%</span>
-        <span id="vatAmount">₪0</span>
-      </div>
-      <div class="total-row grand">
-        <span>סה"כ לתשלום</span>
-        <span id="grandTotal">₪0</span>
-      </div>
+      <div class="total-row"><span>סכום לפני מע"מ</span><span id="subtotal">₪0</span></div>
+      <div class="total-row"><span>מע"מ 18%</span><span id="vatAmount">₪0</span></div>
+      <div class="total-row grand"><span>סה"כ לתשלום</span><span id="grandTotal">₪0</span></div>
     </div>
   </div>
 
-  <!-- Notes -->
   <div class="card">
     <div class="card-title">📝 הערות</div>
     <div class="notes-presets">
@@ -385,346 +173,185 @@
     <textarea id="notes" placeholder="הוסף הערות, תנאי תשלום, אחריות..."></textarea>
   </div>
 
-  <!-- Generate -->
-  <button class="btn-generate" id="generateBtn" onclick="generatePDF()">
-    📄 צור PDF ושלח בוואטסאפ
-  </button>
+  <button class="btn-generate" id="generateBtn" onclick="generatePDF()">📄 צור PDF ושלח בוואטסאפ</button>
 </div>
 
-<div class="success-toast" id="toast">✅ ה-PDF נוצר! פתח מהורדות ושלח בוואטסאפ</div>
+<!-- Hidden PDF template - rendered to canvas then to PDF -->
+<div id="pdfTemplate"></div>
+
+<div class="toast" id="toast"></div>
 
 <script>
-  // ── State ──
-  let items = [];
-  let quoteCounter = parseInt(localStorage.getItem('arik_quoteCounter') || '1');
+let items = [];
+let quoteCounter = parseInt(localStorage.getItem('arik_qc')||'1');
+document.getElementById('quoteDate').valueAsDate = new Date();
+document.getElementById('quoteNumDisplay').textContent = String(quoteCounter).padStart(3,'0');
 
-  // ── Init ──
-  document.getElementById('quoteDate').valueAsDate = new Date();
-  document.getElementById('quoteNumDisplay').textContent = String(quoteCounter).padStart(3, '0');
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+if (isIOS && !window.navigator.standalone && !localStorage.getItem('arik_bd')) {
+  document.getElementById('installBanner').style.display='flex';
+}
+function closeBanner(){ document.getElementById('installBanner').style.display='none'; localStorage.setItem('arik_bd','1'); }
 
-  // Show iOS install banner once
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const isStandalone = window.navigator.standalone === true;
-  const bannerDismissed = localStorage.getItem('arik_bannerDismissed');
-  if (isIOS && !isStandalone && !bannerDismissed) {
-    document.getElementById('installBanner').style.display = 'flex';
-  }
+function fmt(n){ return '₪'+Math.round(n).toLocaleString('he-IL'); }
 
-  function closeBanner() {
-    document.getElementById('installBanner').style.display = 'none';
-    localStorage.setItem('arik_bannerDismissed', '1');
-  }
+function updateTotals(){
+  const sub=items.reduce((s,i)=>s+i.total,0), vat=sub*0.18;
+  document.getElementById('subtotal').textContent=fmt(sub);
+  document.getElementById('vatAmount').textContent=fmt(vat);
+  document.getElementById('grandTotal').textContent=fmt(sub+vat);
+}
 
-  // ── Helpers ──
-  function formatMoney(n) {
-    return '₪' + Math.round(n).toLocaleString('he-IL');
-  }
+function addItem(){
+  const d=document.getElementById('newDesc'), q=document.getElementById('newQty'), p=document.getElementById('newPrice');
+  const desc=d.value.trim(), qty=parseFloat(q.value)||1, price=parseFloat(p.value);
+  if(!desc){d.style.borderColor='#c0392b';d.focus();setTimeout(()=>d.style.borderColor='',1500);return;}
+  if(!price||price<=0){p.style.borderColor='#c0392b';p.focus();setTimeout(()=>p.style.borderColor='',1500);return;}
+  items.push({desc,qty,price,total:qty*price});
+  renderItems(); d.value='';p.value='';q.value='1';d.focus();
+}
+document.getElementById('newDesc').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();document.getElementById('newPrice').focus();}});
+document.getElementById('newPrice').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addItem();}});
 
-  function updateTotals() {
-    const subtotal = items.reduce((s, i) => s + i.total, 0);
-    const vat = subtotal * 0.18;
-    const grand = subtotal + vat;
-    document.getElementById('subtotal').textContent = formatMoney(subtotal);
-    document.getElementById('vatAmount').textContent = formatMoney(vat);
-    document.getElementById('grandTotal').textContent = formatMoney(grand);
-  }
+function removeItem(i){items.splice(i,1);renderItems();}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-  // ── Items ──
-  function addItem() {
-    const descEl = document.getElementById('newDesc');
-    const qtyEl  = document.getElementById('newQty');
-    const priceEl = document.getElementById('newPrice');
+function renderItems(){
+  const el=document.getElementById('itemsList');
+  if(!items.length){el.innerHTML='<div class="empty-items">עדיין לא נוספו פריטים — הוסף למטה</div>';updateTotals();return;}
+  el.innerHTML=items.map((it,i)=>`
+    <div class="item-row">
+      <button class="btn-remove" onclick="removeItem(${i})">×</button>
+      <div class="item-desc">${esc(it.desc)}</div>
+      <div class="item-meta"><span>${it.qty} יח׳</span><span>×</span><span>${fmt(it.price)}</span><span class="item-total">${fmt(it.total)}</span></div>
+    </div>`).join('');
+  updateTotals();
+}
+function addPreset(t){const e=document.getElementById('notes');e.value=e.value?e.value+'\n'+t:t;}
+function showToast(msg,bg){const t=document.getElementById('toast');t.textContent=msg;t.style.background=bg||'#27ae60';t.style.display='block';setTimeout(()=>t.style.display='none',4500);}
 
-    const desc  = descEl.value.trim();
-    const qty   = parseFloat(qtyEl.value) || 1;
-    const price = parseFloat(priceEl.value);
+function buildPDFTemplate(clientName){
+  const sub=items.reduce((s,i)=>s+i.total,0), vat=sub*0.18, grand=sub+vat;
+  const dateVal=document.getElementById('quoteDate').value;
+  const dateFmt=dateVal?new Date(dateVal+'T12:00:00').toLocaleDateString('he-IL'):new Date().toLocaleDateString('he-IL');
+  const phone=document.getElementById('clientPhone').value;
+  const address=document.getElementById('projectAddress').value;
+  const notes=document.getElementById('notes').value.trim();
+  const qNum=String(quoteCounter).padStart(3,'0');
 
-    if (!desc) {
-      descEl.focus();
-      descEl.style.borderColor = '#c0392b';
-      setTimeout(() => descEl.style.borderColor = '', 1500);
-      return;
-    }
-    if (!price || price <= 0) {
-      priceEl.focus();
-      priceEl.style.borderColor = '#c0392b';
-      setTimeout(() => priceEl.style.borderColor = '', 1500);
-      return;
-    }
+  const rows=items.map((it,i)=>`
+    <tr>
+      <td class="col-desc">${esc(it.desc)}</td>
+      <td class="col-num">${it.qty}</td>
+      <td class="col-num">${fmt(it.price)}</td>
+      <td class="col-total">${fmt(it.total)}</td>
+    </tr>`).join('');
 
-    items.push({ desc, qty, price, total: qty * price });
-    renderItems();
-
-    descEl.value  = '';
-    priceEl.value = '';
-    qtyEl.value   = '1';
-    descEl.focus();
-  }
-
-  // Enter on price field adds item
-  document.getElementById('newPrice').addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); addItem(); }
-  });
-  document.getElementById('newDesc').addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); document.getElementById('newPrice').focus(); }
-  });
-
-  function removeItem(index) {
-    items.splice(index, 1);
-    renderItems();
-  }
-
-  function renderItems() {
-    const list = document.getElementById('itemsList');
-
-    if (items.length === 0) {
-      list.innerHTML = '<div class="empty-items">עדיין לא נוספו פריטים — הוסף למטה</div>';
-      updateTotals();
-      return;
-    }
-
-    list.innerHTML = items.map((item, i) => `
-      <div class="item-row">
-        <button class="btn-remove" onclick="removeItem(${i})">×</button>
-        <div class="item-desc">${escHtml(item.desc)}</div>
-        <div class="item-meta">
-          <span>${item.qty} יח׳</span>
-          <span>×</span>
-          <span>${formatMoney(item.price)}</span>
-          <span class="item-total">${formatMoney(item.total)}</span>
+  return `
+    <div class="pt-header">
+      <h1>אריק שיפוצים <span>בע"מ</span></h1>
+      <div class="pt-sub">הצעת מחיר מקצועית</div>
+      <div class="pt-num">מס׳ ${qNum}</div>
+    </div>
+    <div class="pt-gold-bar"></div>
+    <div class="pt-body">
+      <div class="pt-meta">
+        <div class="pt-meta-group">
+          <label>לקוח</label>
+          <span>${esc(clientName)}</span>
+          ${phone?`<small>טל׳: ${esc(phone)}</small>`:''}
+          ${address?`<small>${esc(address)}</small>`:''}
+        </div>
+        <div class="pt-meta-group" style="text-align:left">
+          <label>תאריך</label>
+          <span>${dateFmt}</span>
         </div>
       </div>
-    `).join('');
+      <table class="pt-table">
+        <thead><tr>
+          <th style="text-align:right">תיאור העבודה</th>
+          <th>כמות</th>
+          <th>מחיר יח׳</th>
+          <th>סה"כ</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="pt-totals">
+        <div class="pt-totals-box">
+          <div class="pt-totals-row"><span>סכום לפני מע"מ</span><span>${fmt(sub)}</span></div>
+          <div class="pt-totals-row"><span>מע"מ 18%</span><span>${fmt(vat)}</span></div>
+          <div class="pt-totals-row grand"><span>סה"כ לתשלום</span><span>${fmt(grand)}</span></div>
+        </div>
+      </div>
+      ${notes?`<div class="pt-notes"><h4>הערות</h4><p>${esc(notes)}</p></div>`:''}
+    </div>
+    <div class="pt-footer">תודה על הפנייה! נשמח לשרת אותך — <span>אריק שיפוצים בע"מ</span></div>
+  `;
+}
 
-    updateTotals();
-  }
+async function generatePDF(){
+  const clientName=document.getElementById('clientName').value.trim();
+  if(!clientName){document.getElementById('clientName').style.borderColor='#c0392b';document.getElementById('clientName').focus();setTimeout(()=>document.getElementById('clientName').style.borderColor='',1500);return;}
+  if(!items.length){showToast('⚠️ יש להוסיף לפחות פריט אחד','#e67e22');return;}
 
-  function escHtml(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
+  const btn=document.getElementById('generateBtn');
+  btn.disabled=true;btn.textContent='⏳ יוצר PDF...';
 
-  function addPreset(text) {
-    const el = document.getElementById('notes');
-    el.value = el.value ? el.value + '\n' + text : text;
-  }
+  try {
+    // Build hidden template
+    const tmpl=document.getElementById('pdfTemplate');
+    tmpl.innerHTML=buildPDFTemplate(clientName);
+    // Wait for fonts to load
+    await document.fonts.ready;
+    await new Promise(r=>setTimeout(r,300));
 
-  // ── PDF Generation ──
-  async function generatePDF() {
-    const clientName = document.getElementById('clientName').value.trim();
-    if (!clientName) {
-      document.getElementById('clientName').focus();
-      document.getElementById('clientName').style.borderColor = '#c0392b';
-      setTimeout(() => document.getElementById('clientName').style.borderColor = '', 1500);
-      return;
-    }
-    if (items.length === 0) {
-      showToast('⚠️ יש להוסיף לפחות פריט אחד', '#e67e22');
-      return;
-    }
+    const canvas=await html2canvas(tmpl,{
+      scale:2,
+      useCORS:true,
+      allowTaint:true,
+      backgroundColor:'#ffffff',
+      width:794,
+      windowWidth:794
+    });
 
-    const btn = document.getElementById('generateBtn');
-    btn.disabled = true;
-    btn.textContent = '⏳ יוצר PDF...';
+    const imgData=canvas.toDataURL('image/jpeg',0.92);
+    const {jsPDF}=window.jspdf;
+    const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const W=210, H=297;
+    const imgH=(canvas.height/canvas.width)*W;
 
-    try {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-      const W = 210;
-      const pageH = 297;
-      let y = 0;
-
-      // ── HEADER ──
-      doc.setFillColor(26, 26, 46);
-      doc.rect(0, 0, W, 45, 'F');
-      doc.setFillColor(232, 184, 75);
-      doc.rect(0, 45, W, 3, 'F');
-
-      doc.setTextColor(255, 255, 255);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(24);
-      doc.text(rh('אריק שיפוצים בע"מ'), W / 2, 20, { align: 'center' });
-
-      doc.setFontSize(11);
-      doc.setTextColor(232, 184, 75);
-      doc.text(rh('הצעת מחיר מקצועית'), W / 2, 30, { align: 'center' });
-
-      doc.setFontSize(10);
-      doc.setTextColor(180, 170, 150);
-      doc.text(rh('מס׳ ' + String(quoteCounter).padStart(3, '0')), W / 2, 40, { align: 'center' });
-
-      y = 56;
-
-      // ── META BOX ──
-      doc.setFillColor(247, 245, 240);
-      doc.roundedRect(12, y, W - 24, 34, 3, 3, 'F');
-      doc.setDrawColor(224, 217, 204);
-      doc.roundedRect(12, y, W - 24, 34, 3, 3, 'S');
-
-      const dateVal = document.getElementById('quoteDate').value;
-      const dateFormatted = dateVal ? new Date(dateVal + 'T12:00:00').toLocaleDateString('he-IL') : new Date().toLocaleDateString('he-IL');
-      const phone = document.getElementById('clientPhone').value;
-      const address = document.getElementById('projectAddress').value;
-
-      const rx = W - 20;
-      doc.setFontSize(9.5);
-      doc.setTextColor(122, 112, 96);
-      doc.setFont('helvetica', 'normal');
-      doc.text(rh('לקוח:'), rx, y + 10, { align: 'right' });
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(26, 26, 46);
-      doc.text(rh(clientName), rx, y + 17, { align: 'right' });
-      if (phone) {
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(122, 112, 96);
-        doc.text(rh('טלפון: ' + phone), rx, y + 24, { align: 'right' });
+    if(imgH<=H){
+      doc.addImage(imgData,'JPEG',0,0,W,imgH);
+    } else {
+      // Multi-page
+      let yPos=0;
+      const pageH=(H/W)*canvas.width;
+      while(yPos<canvas.height){
+        const c2=document.createElement('canvas');
+        const sliceH=Math.min(pageH,canvas.height-yPos);
+        c2.width=canvas.width; c2.height=sliceH;
+        c2.getContext('2d').drawImage(canvas,0,yPos,canvas.width,sliceH,0,0,canvas.width,sliceH);
+        if(yPos>0) doc.addPage();
+        doc.addImage(c2.toDataURL('image/jpeg',0.92),'JPEG',0,0,W,(sliceH/canvas.width)*W);
+        yPos+=pageH;
       }
-      if (address) {
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(122, 112, 96);
-        const shortAddr = address.length > 35 ? address.substring(0, 32) + '...' : address;
-        doc.text(rh('כתובת: ' + shortAddr), rx, y + 31, { align: 'right' });
-      }
-
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(122, 112, 96);
-      doc.text(rh('תאריך:'), 20, y + 10);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(26, 26, 46);
-      doc.text(dateFormatted, 20, y + 17);
-      y += 42;
-
-      // ── TABLE HEADER ──
-      doc.setFillColor(26, 26, 46);
-      doc.rect(12, y, W - 24, 9, 'F');
-      doc.setTextColor(232, 184, 75);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(9);
-      doc.text(rh('סה"כ'), 38, y + 6, { align: 'center' });
-      doc.text(rh('מחיר יח׳'), 72, y + 6, { align: 'center' });
-      doc.text(rh('כמות'), 103, y + 6, { align: 'center' });
-      doc.text(rh('תיאור'), W - 18, y + 6, { align: 'right' });
-      y += 9;
-
-      // ── TABLE ROWS ──
-      doc.setFontSize(9.5);
-      items.forEach((item, idx) => {
-        const rowH = 9;
-        doc.setFillColor(idx % 2 === 0 ? 255 : 247, idx % 2 === 0 ? 255 : 245, idx % 2 === 0 ? 255 : 240);
-        doc.rect(12, y, W - 24, rowH, 'F');
-        doc.setDrawColor(224, 217, 204);
-        doc.line(12, y + rowH, W - 12, y + rowH);
-
-        doc.setTextColor(201, 123, 46);
-        doc.setFont('helvetica', 'bold');
-        doc.text('₪' + Math.round(item.total).toLocaleString(), 38, y + 6.2, { align: 'center' });
-
-        doc.setTextColor(100, 90, 80);
-        doc.setFont('helvetica', 'normal');
-        doc.text('₪' + Math.round(item.price).toLocaleString(), 72, y + 6.2, { align: 'center' });
-        doc.text(String(item.qty), 103, y + 6.2, { align: 'center' });
-
-        doc.setTextColor(26, 26, 46);
-        const descText = item.desc.length > 38 ? item.desc.substring(0, 35) + '...' : item.desc;
-        doc.text(rh(descText), W - 18, y + 6.2, { align: 'right' });
-        y += rowH;
-      });
-      y += 6;
-
-      // ── TOTALS ──
-      const subtotal = items.reduce((s, i) => s + i.total, 0);
-      const vat = subtotal * 0.18;
-      const grand = subtotal + vat;
-      const totalsX = W - 12;
-      const labelX  = totalsX - 52;
-
-      doc.setFontSize(10);
-      doc.setTextColor(100, 90, 80);
-      doc.setFont('helvetica', 'normal');
-      doc.text(rh('סכום לפני מע"מ:'), labelX, y + 7, { align: 'right' });
-      doc.text('₪' + Math.round(subtotal).toLocaleString(), totalsX, y + 7, { align: 'right' });
-      y += 8;
-      doc.text(rh('מע"מ 18%:'), labelX, y + 7, { align: 'right' });
-      doc.text('₪' + Math.round(vat).toLocaleString(), totalsX, y + 7, { align: 'right' });
-      y += 6;
-
-      doc.setFillColor(26, 26, 46);
-      doc.roundedRect(W - 80, y, 68, 13, 2, 2, 'F');
-      doc.setTextColor(232, 184, 75);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.text(rh('סה"כ לתשלום:'), W - 78, y + 8.5, { align: 'left' });
-      doc.text('₪' + Math.round(grand).toLocaleString(), totalsX, y + 8.5, { align: 'right' });
-      y += 20;
-
-      // ── NOTES ──
-      const notes = document.getElementById('notes').value.trim();
-      if (notes) {
-        const lines = notes.split('\n');
-        const boxH = 6 + lines.length * 6 + 6;
-        doc.setFillColor(255, 251, 240);
-        doc.setDrawColor(232, 184, 75);
-        doc.roundedRect(12, y, W - 24, boxH, 3, 3, 'FD');
-        doc.setTextColor(26, 26, 46);
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(9.5);
-        doc.text(rh('הערות:'), W - 18, y + 7, { align: 'right' });
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(80, 70, 60);
-        doc.setFontSize(9);
-        lines.forEach((line, li) => {
-          doc.text(rh(line), W - 18, y + 13 + li * 6, { align: 'right' });
-        });
-        y += boxH + 10;
-      }
-
-      // ── FOOTER ──
-      const footerY = pageH - 16;
-      doc.setFillColor(26, 26, 46);
-      doc.rect(0, footerY - 2, W, 20, 'F');
-      doc.setFillColor(232, 184, 75);
-      doc.rect(0, footerY - 2, W, 1.5, 'F');
-      doc.setTextColor(160, 150, 130);
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8.5);
-      doc.text(rh('תודה על הפנייה! נשמח לשרת אותך.'), W / 2, footerY + 5, { align: 'center' });
-      doc.setTextColor(232, 184, 75);
-      doc.setFontSize(7.5);
-      doc.text(rh('אריק שיפוצים בע"מ'), W / 2, footerY + 11, { align: 'center' });
-
-      // ── SAVE ──
-      const filename = 'הצעת-מחיר-' + clientName.replace(/\s+/g, '-') + '-' + String(quoteCounter).padStart(3, '0') + '.pdf';
-      doc.save(filename);
-
-      // Increment counter
-      quoteCounter++;
-      localStorage.setItem('arik_quoteCounter', quoteCounter);
-      document.getElementById('quoteNumDisplay').textContent = String(quoteCounter).padStart(3, '0');
-
-      showToast('✅ ה-PDF נשמר!\nפתח מ״הורדות״ ושלח בוואטסאפ');
-
-    } catch (err) {
-      console.error(err);
-      showToast('❌ שגיאה: ' + err.message, '#c0392b');
     }
 
-    btn.disabled = false;
-    btn.textContent = '📄 צור PDF ושלח בוואטסאפ';
-  }
+    const fname='הצעת-מחיר-'+clientName.replace(/\s+/g,'-')+'-'+String(quoteCounter).padStart(3,'0')+'.pdf';
+    doc.save(fname);
 
-  function showToast(msg, bg) {
-    const toast = document.getElementById('toast');
-    toast.textContent = msg;
-    toast.style.background = bg || '#27ae60';
-    toast.style.display = 'block';
-    setTimeout(() => { toast.style.display = 'none'; }, 4000);
-  }
+    quoteCounter++;
+    localStorage.setItem('arik_qc',quoteCounter);
+    document.getElementById('quoteNumDisplay').textContent=String(quoteCounter).padStart(3,'0');
+    tmpl.innerHTML='';
+    showToast('✅ ה-PDF נשמר!\nפתח מ״הורדות״ ושלח בוואטסאפ');
 
-  // rh = reverse hebrew for jsPDF RTL rendering
-  function rh(str) {
-    // Split into tokens: Hebrew/mixed words vs numbers/symbols, reverse word order
-    // Simple approach: reverse the whole string character by character
-    return str.split('').reverse().join('');
+  } catch(err){
+    console.error(err);
+    showToast('❌ שגיאה: '+err.message,'#c0392b');
   }
+  btn.disabled=false;btn.textContent='📄 צור PDF ושלח בוואטסאפ';
+}
 </script>
 </body>
 </html>
