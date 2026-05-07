@@ -2,9 +2,13 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="אריק שיפוצים">
+<meta name="theme-color" content="#1a1a2e">
 <title>אריק שיפוצים - הצעת מחיר</title>
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjQwIiBmaWxsPSIjMWExYTJlIi8+PHRleHQgeD0iOTAiIHk9IjExNSIgZm9udC1zaXplPSI4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+8J+SoTwvdGV4dD48L3N2Zz4=">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root {
@@ -19,61 +23,75 @@
     --danger: #c0392b;
     --success: #27ae60;
   }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   body {
-    font-family: 'Heebo', sans-serif;
+    font-family: -apple-system, 'Heebo', sans-serif;
     background: var(--surface2);
     color: var(--text);
     min-height: 100vh;
     direction: rtl;
+    -webkit-font-smoothing: antialiased;
   }
-
   .app-header {
     background: var(--primary);
     color: white;
-    padding: 20px 20px 16px;
+    padding: 16px 20px 14px;
+    padding-top: max(16px, env(safe-area-inset-top));
     position: sticky;
     top: 0;
     z-index: 100;
     box-shadow: 0 2px 20px rgba(0,0,0,0.3);
   }
+  .app-header h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+  .app-header h1 span { color: var(--accent); }
+  .app-header p { font-size: 11px; opacity: 0.55; margin-top: 2px; font-weight: 300; }
 
-  .app-header h1 {
-    font-size: 22px;
+  /* Install banner */
+  .install-banner {
+    background: linear-gradient(135deg, #0f3460, #1a1a2e);
+    color: white;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    border-bottom: 2px solid var(--accent);
+  }
+  .install-banner span { flex: 1; line-height: 1.4; }
+  .install-banner strong { color: var(--accent); display: block; font-size: 12px; }
+  .install-banner button {
+    background: var(--accent);
+    color: var(--primary);
+    border: none;
+    border-radius: 8px;
+    padding: 7px 12px;
     font-weight: 800;
-    letter-spacing: -0.5px;
-  }
-
-  .app-header h1 span {
-    color: var(--accent);
-  }
-
-  .app-header p {
     font-size: 12px;
-    opacity: 0.6;
-    margin-top: 2px;
-    font-weight: 300;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: inherit;
+  }
+  .install-banner .close-btn {
+    background: none;
+    color: rgba(255,255,255,0.5);
+    padding: 4px 6px;
+    font-size: 18px;
+    line-height: 1;
+    min-width: unset;
   }
 
-  .container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px 16px 40px;
-  }
+  .container { max-width: 600px; margin: 0 auto; padding: 16px 14px 60px; }
 
   .card {
     background: white;
     border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 16px;
+    padding: 18px;
+    margin-bottom: 14px;
     box-shadow: 0 1px 8px rgba(0,0,0,0.06);
     border: 1px solid var(--border);
   }
-
   .card-title {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -83,111 +101,69 @@
     align-items: center;
     gap: 6px;
   }
+  .card-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-  .card-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  .form-group {
-    margin-bottom: 14px;
-  }
-
+  .form-group { margin-bottom: 12px; }
   .form-group:last-child { margin-bottom: 0; }
-
-  label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-muted);
-    margin-bottom: 6px;
-  }
+  label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; }
 
   input, textarea, select {
     width: 100%;
     padding: 12px 14px;
     border: 1.5px solid var(--border);
     border-radius: 10px;
-    font-family: 'Heebo', sans-serif;
-    font-size: 15px;
+    font-family: inherit;
+    font-size: 16px; /* 16px prevents iOS zoom */
     color: var(--text);
     background: var(--surface2);
     transition: border-color 0.2s, box-shadow 0.2s;
     -webkit-appearance: none;
     direction: rtl;
   }
-
   input:focus, textarea:focus, select:focus {
     outline: none;
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(232,184,75,0.15);
     background: white;
   }
+  textarea { resize: vertical; min-height: 80px; line-height: 1.5; font-size: 15px; }
 
-  textarea {
-    resize: vertical;
-    min-height: 80px;
-    line-height: 1.5;
-  }
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-  .row-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  /* Items table */
+  /* Items */
   .items-list { margin-bottom: 12px; }
-
   .item-row {
     background: var(--surface2);
     border-radius: 10px;
-    padding: 12px;
+    padding: 11px 12px;
     margin-bottom: 8px;
     border: 1px solid var(--border);
     position: relative;
   }
-
-  .item-row .item-desc {
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 6px;
-    padding-left: 28px;
-  }
-
+  .item-row .item-desc { font-size: 14px; font-weight: 600; margin-bottom: 5px; padding-left: 28px; }
   .item-row .item-meta {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     align-items: center;
     font-size: 13px;
     color: var(--text-muted);
   }
-
-  .item-row .item-total {
-    font-weight: 700;
-    color: var(--accent2);
-    font-size: 14px;
-    margin-right: auto;
-  }
-
+  .item-row .item-total { font-weight: 700; color: var(--accent2); font-size: 14px; margin-right: auto; }
   .btn-remove {
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 8px;
+    left: 8px;
     background: none;
     border: none;
     color: #ccc;
-    font-size: 18px;
+    font-size: 20px;
     cursor: pointer;
     padding: 2px 6px;
     border-radius: 6px;
-    transition: all 0.2s;
     line-height: 1;
+    transition: all 0.2s;
   }
-
-  .btn-remove:hover { color: var(--danger); background: #fef0ee; }
+  .btn-remove:active { color: var(--danger); background: #fef0ee; }
 
   .add-item-form {
     background: #fffbf0;
@@ -195,81 +171,56 @@
     border-radius: 12px;
     padding: 14px;
   }
-
   .add-item-form .form-group { margin-bottom: 10px; }
 
   .btn-add-item {
     width: 100%;
-    padding: 11px;
+    padding: 13px;
     background: var(--accent);
     color: var(--primary);
     border: none;
     border-radius: 10px;
-    font-family: 'Heebo', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 800;
     cursor: pointer;
-    transition: all 0.2s;
-    margin-top: 4px;
+    transition: all 0.15s;
+    margin-top: 2px;
+    -webkit-appearance: none;
   }
-
-  .btn-add-item:hover { background: var(--accent2); color: white; }
+  .btn-add-item:active { background: var(--accent2); color: white; transform: scale(0.98); }
 
   /* Totals */
-  .totals-box {
-    background: var(--primary);
-    border-radius: 12px;
-    padding: 16px;
-    color: white;
-  }
-
-  .total-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 0;
-    font-size: 14px;
-    opacity: 0.75;
-  }
-
+  .totals-box { background: var(--primary); border-radius: 12px; padding: 16px; color: white; }
+  .total-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: 14px; opacity: 0.75; }
   .total-row.grand {
     border-top: 1px solid rgba(255,255,255,0.2);
     margin-top: 8px;
     padding-top: 12px;
-    font-size: 18px;
+    font-size: 19px;
     font-weight: 800;
     opacity: 1;
     color: var(--accent);
   }
 
-  /* Notes */
-  .notes-presets {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 10px;
-  }
-
+  /* Notes presets */
+  .notes-presets { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
   .preset-btn {
     background: var(--surface2);
     border: 1.5px solid var(--border);
     border-radius: 20px;
     padding: 5px 12px;
-    font-family: 'Heebo', sans-serif;
+    font-family: inherit;
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
     color: var(--text-muted);
-    transition: all 0.2s;
+    transition: all 0.15s;
+    -webkit-appearance: none;
   }
+  .preset-btn:active { border-color: var(--accent); color: var(--accent2); background: #fffbf0; }
 
-  .preset-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent2);
-    background: #fffbf0;
-  }
-
-  /* Generate Button */
+  /* Generate button */
   .btn-generate {
     width: 100%;
     padding: 18px;
@@ -277,38 +228,18 @@
     color: var(--primary);
     border: none;
     border-radius: 14px;
-    font-family: 'Heebo', sans-serif;
+    font-family: inherit;
     font-size: 17px;
     font-weight: 800;
     cursor: pointer;
-    transition: all 0.25s;
+    transition: all 0.2s;
     box-shadow: 0 4px 20px rgba(232,184,75,0.4);
-    letter-spacing: 0.3px;
+    -webkit-appearance: none;
   }
+  .btn-generate:active { transform: scale(0.98); box-shadow: 0 2px 10px rgba(232,184,75,0.3); }
+  .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-  .btn-generate:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 24px rgba(232,184,75,0.5);
-  }
-
-  .btn-generate:active { transform: translateY(0); }
-
-  .btn-generate:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-  }
-
-  /* Empty state */
-  .empty-items {
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 13px;
-    padding: 16px;
-    opacity: 0.6;
-  }
-
-  /* Quote number badge */
+  /* Quote number */
   .quote-num {
     display: inline-flex;
     align-items: center;
@@ -323,10 +254,11 @@
     margin-bottom: 14px;
   }
 
+  /* Toast */
   .success-toast {
     display: none;
     position: fixed;
-    bottom: 30px;
+    bottom: max(30px, env(safe-area-inset-bottom, 30px));
     left: 50%;
     transform: translateX(-50%);
     background: var(--success);
@@ -338,17 +270,17 @@
     z-index: 999;
     box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     white-space: nowrap;
+    text-align: center;
+    max-width: 90vw;
+    white-space: normal;
+    line-height: 1.4;
   }
 
-  .hint {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 4px;
-  }
+  .empty-items { text-align: center; color: var(--text-muted); font-size: 13px; padding: 16px; opacity: 0.6; }
 
   @media (max-width: 400px) {
     .row-2 { grid-template-columns: 1fr; }
-    .app-header h1 { font-size: 19px; }
+    .app-header h1 { font-size: 18px; }
   }
 </style>
 </head>
@@ -359,9 +291,17 @@
   <p>מחולל הצעות מחיר מקצועי</p>
 </div>
 
-<div class="container">
+<!-- iOS install banner -->
+<div class="install-banner" id="installBanner" style="display:none">
+  <div style="font-size:26px">📲</div>
+  <span>
+    הוסף לסקרין הבית לגישה מהירה
+    <strong>לחץ ⎙ Share ← "Add to Home Screen"</strong>
+  </span>
+  <button class="close-btn" onclick="closeBanner()">×</button>
+</div>
 
-  <!-- Quote Number -->
+<div class="container">
   <div class="quote-num">
     📋 הצעת מחיר מס׳ <span id="quoteNumDisplay">001</span>
   </div>
@@ -371,7 +311,7 @@
     <div class="card-title">👤 פרטי לקוח</div>
     <div class="form-group">
       <label>שם הלקוח / שם החברה</label>
-      <input type="text" id="clientName" placeholder="לדוגמה: משפחת כהן" autocomplete="off">
+      <input type="text" id="clientName" placeholder="לדוגמה: משפחת כהן" autocomplete="off" autocorrect="off">
     </div>
     <div class="row-2">
       <div class="form-group">
@@ -385,34 +325,32 @@
     </div>
     <div class="form-group">
       <label>כתובת הנכס / תיאור הפרויקט</label>
-      <input type="text" id="projectAddress" placeholder="לדוגמה: רחוב הרצל 5, תל אביב">
+      <input type="text" id="projectAddress" placeholder="לדוגמה: רחוב הרצל 5, תל אביב" autocorrect="off">
     </div>
   </div>
 
   <!-- Items -->
   <div class="card">
     <div class="card-title">🔧 פריטי העבודה</div>
-
     <div class="items-list" id="itemsList">
       <div class="empty-items" id="emptyState">עדיין לא נוספו פריטים — הוסף למטה</div>
     </div>
-
     <div class="add-item-form">
       <div class="form-group">
         <label>תיאור העבודה</label>
-        <input type="text" id="newDesc" placeholder="לדוגמה: ריצוף סלון — 40 מ״ר" autocomplete="off">
+        <input type="text" id="newDesc" placeholder="לדוגמה: ריצוף סלון 40 מ״ר" autocomplete="off" autocorrect="off">
       </div>
       <div class="row-2">
         <div class="form-group">
           <label>כמות</label>
-          <input type="number" id="newQty" placeholder="1" min="0.1" step="0.1" value="1">
+          <input type="number" id="newQty" placeholder="1" min="0.1" step="0.1" value="1" inputmode="decimal">
         </div>
         <div class="form-group">
           <label>מחיר ליחידה (₪)</label>
-          <input type="number" id="newPrice" placeholder="0" min="0" step="10">
+          <input type="number" id="newPrice" placeholder="0" min="0" step="10" inputmode="decimal">
         </div>
       </div>
-      <button class="btn-add-item" onclick="addItem()">+ הוסף פריט</button>
+      <button class="btn-add-item" onclick="addItem()">＋ הוסף פריט</button>
     </div>
   </div>
 
@@ -449,45 +387,86 @@
 
   <!-- Generate -->
   <button class="btn-generate" id="generateBtn" onclick="generatePDF()">
-    📄 צור PDF ושמור לטלפון
+    📄 צור PDF ושלח בוואטסאפ
   </button>
-
 </div>
 
-<div class="success-toast" id="toast">✅ ה-PDF נשמר! פתח מהורדות ושלח ב-WhatsApp</div>
+<div class="success-toast" id="toast">✅ ה-PDF נוצר! פתח מהורדות ושלח בוואטסאפ</div>
 
 <script>
+  // ── State ──
   let items = [];
-  let quoteCounter = parseInt(localStorage.getItem('quoteCounter') || '1');
+  let quoteCounter = parseInt(localStorage.getItem('arik_quoteCounter') || '1');
 
-  // Set today's date
+  // ── Init ──
   document.getElementById('quoteDate').valueAsDate = new Date();
   document.getElementById('quoteNumDisplay').textContent = String(quoteCounter).padStart(3, '0');
 
+  // Show iOS install banner once
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone === true;
+  const bannerDismissed = localStorage.getItem('arik_bannerDismissed');
+  if (isIOS && !isStandalone && !bannerDismissed) {
+    document.getElementById('installBanner').style.display = 'flex';
+  }
+
+  function closeBanner() {
+    document.getElementById('installBanner').style.display = 'none';
+    localStorage.setItem('arik_bannerDismissed', '1');
+  }
+
+  // ── Helpers ──
   function formatMoney(n) {
     return '₪' + Math.round(n).toLocaleString('he-IL');
   }
 
-  function addItem() {
-    const desc = document.getElementById('newDesc').value.trim();
-    const qty = parseFloat(document.getElementById('newQty').value) || 1;
-    const price = parseFloat(document.getElementById('newPrice').value) || 0;
+  function updateTotals() {
+    const subtotal = items.reduce((s, i) => s + i.total, 0);
+    const vat = subtotal * 0.18;
+    const grand = subtotal + vat;
+    document.getElementById('subtotal').textContent = formatMoney(subtotal);
+    document.getElementById('vatAmount').textContent = formatMoney(vat);
+    document.getElementById('grandTotal').textContent = formatMoney(grand);
+  }
 
-    if (!desc) { document.getElementById('newDesc').focus(); return; }
-    if (!price) { document.getElementById('newPrice').focus(); return; }
+  // ── Items ──
+  function addItem() {
+    const descEl = document.getElementById('newDesc');
+    const qtyEl  = document.getElementById('newQty');
+    const priceEl = document.getElementById('newPrice');
+
+    const desc  = descEl.value.trim();
+    const qty   = parseFloat(qtyEl.value) || 1;
+    const price = parseFloat(priceEl.value);
+
+    if (!desc) {
+      descEl.focus();
+      descEl.style.borderColor = '#c0392b';
+      setTimeout(() => descEl.style.borderColor = '', 1500);
+      return;
+    }
+    if (!price || price <= 0) {
+      priceEl.focus();
+      priceEl.style.borderColor = '#c0392b';
+      setTimeout(() => priceEl.style.borderColor = '', 1500);
+      return;
+    }
 
     items.push({ desc, qty, price, total: qty * price });
     renderItems();
 
-    document.getElementById('newDesc').value = '';
-    document.getElementById('newPrice').value = '';
-    document.getElementById('newQty').value = '1';
-    document.getElementById('newDesc').focus();
+    descEl.value  = '';
+    priceEl.value = '';
+    qtyEl.value   = '1';
+    descEl.focus();
   }
 
-  // Allow Enter key to add item
+  // Enter on price field adds item
   document.getElementById('newPrice').addEventListener('keydown', e => {
-    if (e.key === 'Enter') addItem();
+    if (e.key === 'Enter') { e.preventDefault(); addItem(); }
+  });
+  document.getElementById('newDesc').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); document.getElementById('newPrice').focus(); }
   });
 
   function removeItem(index) {
@@ -497,19 +476,17 @@
 
   function renderItems() {
     const list = document.getElementById('itemsList');
-    const empty = document.getElementById('emptyState');
 
     if (items.length === 0) {
-      list.innerHTML = '';
-      list.appendChild(empty);
-      updateTotals(0);
+      list.innerHTML = '<div class="empty-items">עדיין לא נוספו פריטים — הוסף למטה</div>';
+      updateTotals();
       return;
     }
 
     list.innerHTML = items.map((item, i) => `
       <div class="item-row">
         <button class="btn-remove" onclick="removeItem(${i})">×</button>
-        <div class="item-desc">${item.desc}</div>
+        <div class="item-desc">${escHtml(item.desc)}</div>
         <div class="item-meta">
           <span>${item.qty} יח׳</span>
           <span>×</span>
@@ -519,16 +496,11 @@
       </div>
     `).join('');
 
-    const subtotal = items.reduce((s, i) => s + i.total, 0);
-    updateTotals(subtotal);
+    updateTotals();
   }
 
-  function updateTotals(subtotal) {
-    const vat = subtotal * 0.18;
-    const grand = subtotal + vat;
-    document.getElementById('subtotal').textContent = formatMoney(subtotal);
-    document.getElementById('vatAmount').textContent = formatMoney(vat);
-    document.getElementById('grandTotal').textContent = formatMoney(grand);
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
   function addPreset(text) {
@@ -536,228 +508,221 @@
     el.value = el.value ? el.value + '\n' + text : text;
   }
 
+  // ── PDF Generation ──
   async function generatePDF() {
     const clientName = document.getElementById('clientName').value.trim();
-    if (!clientName) { document.getElementById('clientName').focus(); alert('נא להזין שם לקוח'); return; }
-    if (items.length === 0) { alert('נא להוסיף לפחות פריט אחד'); return; }
+    if (!clientName) {
+      document.getElementById('clientName').focus();
+      document.getElementById('clientName').style.borderColor = '#c0392b';
+      setTimeout(() => document.getElementById('clientName').style.borderColor = '', 1500);
+      return;
+    }
+    if (items.length === 0) {
+      showToast('⚠️ יש להוסיף לפחות פריט אחד', '#e67e22');
+      return;
+    }
 
     const btn = document.getElementById('generateBtn');
     btn.disabled = true;
     btn.textContent = '⏳ יוצר PDF...';
 
-    const { jsPDF } = window.jspdf;
+    try {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const W = 210;
+      const pageH = 297;
+      let y = 0;
 
-    // Create PDF in A4
-    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      // ── HEADER ──
+      doc.setFillColor(26, 26, 46);
+      doc.rect(0, 0, W, 45, 'F');
+      doc.setFillColor(232, 184, 75);
+      doc.rect(0, 45, W, 3, 'F');
 
-    const W = 210;
-    const pageH = 297;
-    let y = 0;
-
-    // ─── HEADER BACKGROUND ───
-    doc.setFillColor(26, 26, 46); // primary dark blue
-    doc.rect(0, 0, W, 45, 'F');
-
-    // Gold accent bar
-    doc.setFillColor(232, 184, 75);
-    doc.rect(0, 45, W, 3, 'F');
-
-    // Company Name (Hebrew — use built-in font, simulate RTL by reversing)
-    doc.setTextColor(255, 255, 255);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(26);
-    const companyHe = reverseHebrew('אריק שיפוצים בע"מ');
-    doc.text(companyHe, W / 2, 22, { align: 'center' });
-
-    doc.setFontSize(11);
-    doc.setTextColor(232, 184, 75);
-    const subtitle = reverseHebrew('הצעת מחיר מקצועית');
-    doc.text(subtitle, W / 2, 32, { align: 'center' });
-
-    doc.setFontSize(10);
-    doc.setTextColor(180, 170, 150);
-    const quoteNum = reverseHebrew(`מס׳ ${String(quoteCounter).padStart(3, '0')}`);
-    doc.text(quoteNum, W / 2, 41, { align: 'center' });
-
-    y = 56;
-
-    // ─── META INFO BOX ───
-    doc.setFillColor(247, 245, 240);
-    doc.roundedRect(12, y, W - 24, 34, 3, 3, 'F');
-    doc.setDrawColor(224, 217, 204);
-    doc.roundedRect(12, y, W - 24, 34, 3, 3, 'S');
-
-    doc.setFontSize(10);
-    doc.setTextColor(122, 112, 96);
-    doc.setFont('helvetica', 'normal');
-
-    const dateVal = document.getElementById('quoteDate').value;
-    const dateFormatted = dateVal ? new Date(dateVal).toLocaleDateString('he-IL') : new Date().toLocaleDateString('he-IL');
-    const phone = document.getElementById('clientPhone').value;
-    const address = document.getElementById('projectAddress').value;
-
-    // Right column
-    const rx = W - 20;
-    doc.text(reverseHebrew('לקוח:'), rx, y + 10, { align: 'right' });
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(26, 26, 46);
-    doc.text(reverseHebrew(clientName), rx, y + 17, { align: 'right' });
-
-    if (phone) {
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(122, 112, 96);
-      doc.text(reverseHebrew('טלפון: ' + phone), rx, y + 24, { align: 'right' });
-    }
-
-    if (address) {
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(122, 112, 96);
-      const shortAddr = address.length > 35 ? address.substring(0, 32) + '...' : address;
-      doc.text(reverseHebrew('כתובת: ' + shortAddr), rx, y + 31, { align: 'right' });
-    }
-
-    // Left column
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(122, 112, 96);
-    doc.text(reverseHebrew('תאריך:'), 20, y + 10);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(26, 26, 46);
-    doc.text(dateFormatted, 20, y + 17);
-
-    y += 42;
-
-    // ─── ITEMS TABLE ───
-    // Table header
-    doc.setFillColor(26, 26, 46);
-    doc.rect(12, y, W - 24, 9, 'F');
-    doc.setTextColor(232, 184, 75);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-
-    doc.text(reverseHebrew('סה"כ'), 38, y + 6, { align: 'center' });
-    doc.text(reverseHebrew('מחיר יח׳'), 72, y + 6, { align: 'center' });
-    doc.text(reverseHebrew('כמות'), 103, y + 6, { align: 'center' });
-    doc.text(reverseHebrew('תיאור'), W - 18, y + 6, { align: 'right' });
-
-    y += 9;
-
-    // Rows
-    doc.setFontSize(9.5);
-    items.forEach((item, idx) => {
-      const rowH = 9;
-      if (idx % 2 === 0) {
-        doc.setFillColor(255, 255, 255);
-      } else {
-        doc.setFillColor(247, 245, 240);
-      }
-      doc.rect(12, y, W - 24, rowH, 'F');
-
-      // Border
-      doc.setDrawColor(224, 217, 204);
-      doc.line(12, y + rowH, W - 12, y + rowH);
-
-      doc.setTextColor(201, 123, 46);
+      doc.setTextColor(255, 255, 255);
       doc.setFont('helvetica', 'bold');
-      doc.text('₪' + Math.round(item.total).toLocaleString(), 38, y + 6.2, { align: 'center' });
+      doc.setFontSize(24);
+      doc.text(rh('אריק שיפוצים בע"מ'), W / 2, 20, { align: 'center' });
 
+      doc.setFontSize(11);
+      doc.setTextColor(232, 184, 75);
+      doc.text(rh('הצעת מחיר מקצועית'), W / 2, 30, { align: 'center' });
+
+      doc.setFontSize(10);
+      doc.setTextColor(180, 170, 150);
+      doc.text(rh('מס׳ ' + String(quoteCounter).padStart(3, '0')), W / 2, 40, { align: 'center' });
+
+      y = 56;
+
+      // ── META BOX ──
+      doc.setFillColor(247, 245, 240);
+      doc.roundedRect(12, y, W - 24, 34, 3, 3, 'F');
+      doc.setDrawColor(224, 217, 204);
+      doc.roundedRect(12, y, W - 24, 34, 3, 3, 'S');
+
+      const dateVal = document.getElementById('quoteDate').value;
+      const dateFormatted = dateVal ? new Date(dateVal + 'T12:00:00').toLocaleDateString('he-IL') : new Date().toLocaleDateString('he-IL');
+      const phone = document.getElementById('clientPhone').value;
+      const address = document.getElementById('projectAddress').value;
+
+      const rx = W - 20;
+      doc.setFontSize(9.5);
+      doc.setTextColor(122, 112, 96);
+      doc.setFont('helvetica', 'normal');
+      doc.text(rh('לקוח:'), rx, y + 10, { align: 'right' });
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(26, 26, 46);
+      doc.text(rh(clientName), rx, y + 17, { align: 'right' });
+      if (phone) {
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(122, 112, 96);
+        doc.text(rh('טלפון: ' + phone), rx, y + 24, { align: 'right' });
+      }
+      if (address) {
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(122, 112, 96);
+        const shortAddr = address.length > 35 ? address.substring(0, 32) + '...' : address;
+        doc.text(rh('כתובת: ' + shortAddr), rx, y + 31, { align: 'right' });
+      }
+
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(122, 112, 96);
+      doc.text(rh('תאריך:'), 20, y + 10);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(26, 26, 46);
+      doc.text(dateFormatted, 20, y + 17);
+      y += 42;
+
+      // ── TABLE HEADER ──
+      doc.setFillColor(26, 26, 46);
+      doc.rect(12, y, W - 24, 9, 'F');
+      doc.setTextColor(232, 184, 75);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.text(rh('סה"כ'), 38, y + 6, { align: 'center' });
+      doc.text(rh('מחיר יח׳'), 72, y + 6, { align: 'center' });
+      doc.text(rh('כמות'), 103, y + 6, { align: 'center' });
+      doc.text(rh('תיאור'), W - 18, y + 6, { align: 'right' });
+      y += 9;
+
+      // ── TABLE ROWS ──
+      doc.setFontSize(9.5);
+      items.forEach((item, idx) => {
+        const rowH = 9;
+        doc.setFillColor(idx % 2 === 0 ? 255 : 247, idx % 2 === 0 ? 255 : 245, idx % 2 === 0 ? 255 : 240);
+        doc.rect(12, y, W - 24, rowH, 'F');
+        doc.setDrawColor(224, 217, 204);
+        doc.line(12, y + rowH, W - 12, y + rowH);
+
+        doc.setTextColor(201, 123, 46);
+        doc.setFont('helvetica', 'bold');
+        doc.text('₪' + Math.round(item.total).toLocaleString(), 38, y + 6.2, { align: 'center' });
+
+        doc.setTextColor(100, 90, 80);
+        doc.setFont('helvetica', 'normal');
+        doc.text('₪' + Math.round(item.price).toLocaleString(), 72, y + 6.2, { align: 'center' });
+        doc.text(String(item.qty), 103, y + 6.2, { align: 'center' });
+
+        doc.setTextColor(26, 26, 46);
+        const descText = item.desc.length > 38 ? item.desc.substring(0, 35) + '...' : item.desc;
+        doc.text(rh(descText), W - 18, y + 6.2, { align: 'right' });
+        y += rowH;
+      });
+      y += 6;
+
+      // ── TOTALS ──
+      const subtotal = items.reduce((s, i) => s + i.total, 0);
+      const vat = subtotal * 0.18;
+      const grand = subtotal + vat;
+      const totalsX = W - 12;
+      const labelX  = totalsX - 52;
+
+      doc.setFontSize(10);
       doc.setTextColor(100, 90, 80);
       doc.setFont('helvetica', 'normal');
-      doc.text('₪' + Math.round(item.price).toLocaleString(), 72, y + 6.2, { align: 'center' });
-      doc.text(String(item.qty), 103, y + 6.2, { align: 'center' });
+      doc.text(rh('סכום לפני מע"מ:'), labelX, y + 7, { align: 'right' });
+      doc.text('₪' + Math.round(subtotal).toLocaleString(), totalsX, y + 7, { align: 'right' });
+      y += 8;
+      doc.text(rh('מע"מ 18%:'), labelX, y + 7, { align: 'right' });
+      doc.text('₪' + Math.round(vat).toLocaleString(), totalsX, y + 7, { align: 'right' });
+      y += 6;
 
-      doc.setTextColor(26, 26, 46);
-      const descText = item.desc.length > 38 ? item.desc.substring(0, 35) + '...' : item.desc;
-      doc.text(reverseHebrew(descText), W - 18, y + 6.2, { align: 'right' });
-
-      y += rowH;
-    });
-
-    y += 4;
-
-    // ─── TOTALS ───
-    const subtotal = items.reduce((s, i) => s + i.total, 0);
-    const vat = subtotal * 0.18;
-    const grand = subtotal + vat;
-
-    const totalsX = W - 12;
-    const labelX = totalsX - 52;
-
-    doc.setFontSize(10);
-    doc.setTextColor(100, 90, 80);
-    doc.setFont('helvetica', 'normal');
-    doc.text(reverseHebrew('סכום לפני מע"מ:'), labelX, y + 7, { align: 'right' });
-    doc.text('₪' + Math.round(subtotal).toLocaleString(), totalsX, y + 7, { align: 'right' });
-
-    y += 8;
-    doc.text(reverseHebrew('מע"מ 18%:'), labelX, y + 7, { align: 'right' });
-    doc.text('₪' + Math.round(vat).toLocaleString(), totalsX, y + 7, { align: 'right' });
-
-    y += 6;
-    // Grand total box
-    doc.setFillColor(26, 26, 46);
-    doc.roundedRect(W - 80, y, 68, 13, 2, 2, 'F');
-    doc.setTextColor(232, 184, 75);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
-    doc.text(reverseHebrew('סה"כ לתשלום:'), W - 78, y + 8.5, { align: 'left' });
-    doc.text('₪' + Math.round(grand).toLocaleString(), totalsX, y + 8.5, { align: 'right' });
-
-    y += 20;
-
-    // ─── NOTES ───
-    const notes = document.getElementById('notes').value.trim();
-    if (notes) {
-      doc.setFillColor(255, 251, 240);
-      doc.setDrawColor(232, 184, 75);
-      doc.roundedRect(12, y, W - 24, 6 + (notes.split('\n').length * 6) + 4, 3, 3, 'FD');
-      doc.setTextColor(26, 26, 46);
+      doc.setFillColor(26, 26, 46);
+      doc.roundedRect(W - 80, y, 68, 13, 2, 2, 'F');
+      doc.setTextColor(232, 184, 75);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(9.5);
-      doc.text(reverseHebrew('הערות:'), W - 18, y + 7, { align: 'right' });
+      doc.setFontSize(11);
+      doc.text(rh('סה"כ לתשלום:'), W - 78, y + 8.5, { align: 'left' });
+      doc.text('₪' + Math.round(grand).toLocaleString(), totalsX, y + 8.5, { align: 'right' });
+      y += 20;
+
+      // ── NOTES ──
+      const notes = document.getElementById('notes').value.trim();
+      if (notes) {
+        const lines = notes.split('\n');
+        const boxH = 6 + lines.length * 6 + 6;
+        doc.setFillColor(255, 251, 240);
+        doc.setDrawColor(232, 184, 75);
+        doc.roundedRect(12, y, W - 24, boxH, 3, 3, 'FD');
+        doc.setTextColor(26, 26, 46);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9.5);
+        doc.text(rh('הערות:'), W - 18, y + 7, { align: 'right' });
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(80, 70, 60);
+        doc.setFontSize(9);
+        lines.forEach((line, li) => {
+          doc.text(rh(line), W - 18, y + 13 + li * 6, { align: 'right' });
+        });
+        y += boxH + 10;
+      }
+
+      // ── FOOTER ──
+      const footerY = pageH - 16;
+      doc.setFillColor(26, 26, 46);
+      doc.rect(0, footerY - 2, W, 20, 'F');
+      doc.setFillColor(232, 184, 75);
+      doc.rect(0, footerY - 2, W, 1.5, 'F');
+      doc.setTextColor(160, 150, 130);
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(80, 70, 60);
-      doc.setFontSize(9);
-      notes.split('\n').forEach((line, li) => {
-        doc.text(reverseHebrew(line), W - 18, y + 13 + (li * 6), { align: 'right' });
-      });
-      y += 10 + (notes.split('\n').length * 6) + 10;
+      doc.setFontSize(8.5);
+      doc.text(rh('תודה על הפנייה! נשמח לשרת אותך.'), W / 2, footerY + 5, { align: 'center' });
+      doc.setTextColor(232, 184, 75);
+      doc.setFontSize(7.5);
+      doc.text(rh('אריק שיפוצים בע"מ'), W / 2, footerY + 11, { align: 'center' });
+
+      // ── SAVE ──
+      const filename = 'הצעת-מחיר-' + clientName.replace(/\s+/g, '-') + '-' + String(quoteCounter).padStart(3, '0') + '.pdf';
+      doc.save(filename);
+
+      // Increment counter
+      quoteCounter++;
+      localStorage.setItem('arik_quoteCounter', quoteCounter);
+      document.getElementById('quoteNumDisplay').textContent = String(quoteCounter).padStart(3, '0');
+
+      showToast('✅ ה-PDF נשמר!\nפתח מ״הורדות״ ושלח בוואטסאפ');
+
+    } catch (err) {
+      console.error(err);
+      showToast('❌ שגיאה: ' + err.message, '#c0392b');
     }
 
-    // ─── FOOTER ───
-    const footerY = pageH - 16;
-    doc.setFillColor(26, 26, 46);
-    doc.rect(0, footerY - 2, W, 20, 'F');
-    doc.setFillColor(232, 184, 75);
-    doc.rect(0, footerY - 2, W, 1.5, 'F');
-
-    doc.setTextColor(160, 150, 130);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8.5);
-    doc.text(reverseHebrew('תודה על הפנייה! נשמח לשרת אותך.'), W / 2, footerY + 5, { align: 'center' });
-    doc.setTextColor(232, 184, 75);
-    doc.setFontSize(7.5);
-    doc.text(reverseHebrew('אריק שיפוצים בע"מ'), W / 2, footerY + 11, { align: 'center' });
-
-    // ─── SAVE ───
-    const filename = `הצעת-מחיר-${clientName.replace(/\s+/g, '-')}-${String(quoteCounter).padStart(3,'0')}.pdf`;
-    doc.save(filename);
-
-    // Increment counter
-    quoteCounter++;
-    localStorage.setItem('quoteCounter', quoteCounter);
-    document.getElementById('quoteNumDisplay').textContent = String(quoteCounter).padStart(3, '0');
-
-    // Show toast
-    const toast = document.getElementById('toast');
-    toast.style.display = 'block';
-    setTimeout(() => { toast.style.display = 'none'; }, 4000);
-
     btn.disabled = false;
-    btn.textContent = '📄 צור PDF ושמור לטלפון';
+    btn.textContent = '📄 צור PDF ושלח בוואטסאפ';
   }
 
-  function reverseHebrew(str) {
-    // Reverse Hebrew text for jsPDF rendering (which doesn't natively support RTL)
+  function showToast(msg, bg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.style.background = bg || '#27ae60';
+    toast.style.display = 'block';
+    setTimeout(() => { toast.style.display = 'none'; }, 4000);
+  }
+
+  // rh = reverse hebrew for jsPDF RTL rendering
+  function rh(str) {
+    // Split into tokens: Hebrew/mixed words vs numbers/symbols, reverse word order
+    // Simple approach: reverse the whole string character by character
     return str.split('').reverse().join('');
   }
 </script>
