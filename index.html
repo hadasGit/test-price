@@ -32,6 +32,12 @@
   .install-banner .ibtn { background:var(--accent); color:var(--primary); border:none; border-radius:8px; padding:7px 12px; font-weight:800; font-size:12px; cursor:pointer; font-family:inherit; }
   .install-banner .xbtn { background:none; color:rgba(255,255,255,0.5); border:none; padding:4px 8px; font-size:20px; cursor:pointer; }
 
+  /* ── AUTO-FILL BANNER (shown when Make.com fills the form) ── */
+  .autofill-banner { background:linear-gradient(135deg,#1a472a,#27ae60); color:white; padding:12px 16px; display:flex; align-items:center; gap:10px; font-size:13px; border-bottom:2px solid #2ecc71; }
+  .autofill-banner .ab-icon { font-size:22px; }
+  .autofill-banner span { flex:1; line-height:1.4; }
+  .autofill-banner strong { display:block; font-size:15px; font-weight:800; }
+
   .container { max-width:600px; margin:0 auto; padding:16px 14px 60px; }
   .card { background:white; border-radius:16px; padding:18px; margin-bottom:14px; box-shadow:0 1px 8px rgba(0,0,0,0.06); border:1px solid var(--border); }
   .card-title { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--accent2); margin-bottom:14px; display:flex; align-items:center; gap:6px; }
@@ -75,7 +81,7 @@
   /* ── PDF PREVIEW TEMPLATE (hidden, used only for rendering) ── */
   #pdfTemplate {
     position:fixed; left:-9999px; top:0;
-    width:794px; /* A4 at 96dpi */
+    width:794px;
     background:white;
     font-family:'Heebo',sans-serif;
     direction:rtl;
@@ -127,6 +133,12 @@
   <button class="xbtn" onclick="closeBanner()">×</button>
 </div>
 
+<!-- ✅ Shown only when Make.com fills the form via URL -->
+<div class="autofill-banner" id="autofillBanner" style="display:none">
+  <div class="ab-icon">⚡</div>
+  <span><strong>מולא אוטומטית ע"י Make.com</strong>בדוק את הפרטים ולחץ "צור PDF"</span>
+</div>
+
 <div class="container">
   <div class="quote-num">📋 הצעת מחיר מס׳ <span id="quoteNumDisplay">001</span></div>
 
@@ -176,7 +188,7 @@
   <button class="btn-generate" id="generateBtn" onclick="generatePDF()">📄 צור PDF ושלח בוואטסאפ</button>
 </div>
 
-<!-- Hidden PDF template - rendered to canvas then to PDF -->
+<!-- Hidden PDF template -->
 <div id="pdfTemplate"></div>
 
 <div class="toast" id="toast"></div>
@@ -229,6 +241,96 @@ function renderItems(){
 }
 function addPreset(t){const e=document.getElementById('notes');e.value=e.value?e.value+'\n'+t:t;}
 function showToast(msg,bg){const t=document.getElementById('toast');t.textContent=msg;t.style.background=bg||'#27ae60';t.style.display='block';setTimeout(()=>t.style.display='none',4500);}
+
+// ══════════════════════════════════════════════════
+// ✅ MAKE.COM INTEGRATION — Load data from URL params
+//
+// Simple format (no JSON needed!):
+//   ?client=NAME&phone=050-xxx&address=ADDR
+//   &desc1=ריצוף סלון&qty1=40&price1=180
+//   &desc2=צביעה&qty2=3&price2=500
+//   &notes=TEXT&auto=1
+//
+// Supports up to 10 items (desc1..desc10)
+// ══════════════════════════════════════════════════
+function loadFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  if (!params.toString()) return;
+
+  let filled = false;
+
+  if (params.has('client')) {
+    document.getElementById('clientName').value = params.get('client');
+    filled = true;
+  }
+  if (params.has('phone')) {
+    document.getElementById('clientPhone').value = params.get('phone');
+  }
+  if (params.has('address')) {
+    document.getElementById('projectAddress').value = params.get('address');
+  }
+  if (params.has('date')) {
+    document.getElementById('quoteDate').value = params.get('date');
+  }
+  if (params.has('notes')) {
+    document.getElementById('notes').value = params.get('notes');
+  }
+
+  // Simple params: desc1/qty1/price1, desc2/qty2/price2 ...
+  for (let i = 1; i <= 10; i++) {
+    const desc  = params.get('desc'  + i);
+    const qty   = parseFloat(params.get('qty'   + i)) || 1;
+    const price = parseFloat(params.get('price' + i)) || 0;
+    if (desc && price > 0) {
+      items.push({ desc, qty, price, total: qty * price });
+      filled = true;
+    }
+  }
+  if (items.length) renderItems();
+
+  // Legacy JSON support (items=[...])
+  if (!items.length && params.has('items')) {
+    try {
+      const raw = JSON.parse(params.get('items'));
+      items = raw.map(it => ({
+        desc:  it.desc  || '',
+        qty:   parseFloat(it.qty)   || 1,
+        price: parseFloat(it.price) || 0,
+        total: (parseFloat(it.qty)||1) * (parseFloat(it.price)||0)
+      })).filter(it => it.desc && it.price > 0);
+      if (items.length) { renderItems(); filled = true; }
+    } catch(e) {}
+  }
+
+  if (filled) {
+    document.getElementById('autofillBanner').style.display = 'flex';
+    document.getElementById('installBanner').style.display  = 'none';
+  }
+
+  if (params.get('auto') === '1' && filled) {
+    document.getElementById('generateBtn').textContent = '⏳ מייצר PDF אוטומטית...';
+    document.fonts.ready.then(() => {
+      setTimeout(() => generatePDF(), 600);
+    });
+  }
+}
+
+// ══════════════════════════════════
+// Helper: build a shareable URL
+// (call from Make.com or manually)
+// ══════════════════════════════════
+function buildShareURL(data) {
+  const base = window.location.origin + window.location.pathname;
+  const p = new URLSearchParams();
+  if (data.client)  p.set('client',  data.client);
+  if (data.phone)   p.set('phone',   data.phone);
+  if (data.address) p.set('address', data.address);
+  if (data.date)    p.set('date',    data.date);
+  if (data.notes)   p.set('notes',   data.notes);
+  if (data.items)   p.set('items',   JSON.stringify(data.items));
+  if (data.auto)    p.set('auto',    '1');
+  return base + '?' + p.toString();
+}
 
 function buildPDFTemplate(clientName){
   const sub=items.reduce((s,i)=>s+i.total,0), vat=sub*0.18, grand=sub+vat;
@@ -298,10 +400,8 @@ async function generatePDF(){
   btn.disabled=true;btn.textContent='⏳ יוצר PDF...';
 
   try {
-    // Build hidden template
     const tmpl=document.getElementById('pdfTemplate');
     tmpl.innerHTML=buildPDFTemplate(clientName);
-    // Wait for fonts to load
     await document.fonts.ready;
     await new Promise(r=>setTimeout(r,300));
 
@@ -323,7 +423,6 @@ async function generatePDF(){
     if(imgH<=H){
       doc.addImage(imgData,'JPEG',0,0,W,imgH);
     } else {
-      // Multi-page
       let yPos=0;
       const pageH=(H/W)*canvas.width;
       while(yPos<canvas.height){
@@ -352,6 +451,9 @@ async function generatePDF(){
   }
   btn.disabled=false;btn.textContent='📄 צור PDF ושלח בוואטסאפ';
 }
+
+// ── Init ──
+loadFromURL();
 </script>
 </body>
 </html>
